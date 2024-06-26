@@ -49,6 +49,7 @@ module.exports = {
                 "varsIgnorePattern": "^defs"
             }
         ],
+        "vue/multi-word-component-names": "warn",
         "@typescript-eslint/no-unused-vars": [
             "warn",
             {
@@ -56,5 +57,6 @@ module.exports = {
                 "varsIgnorePattern": "^defs"
             }
         ],
+        "@typescript-eslint/no-explicit-any": "off"
     }
 }
