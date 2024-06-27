@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import Page from "../../../_components/Page/Page.vue";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
 
 const selectedRange = ref(null);
 const startNum = ref(null);
 const currentQuestion = ref({});
-const selectedAnswer = ref(null);
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
 
@@ -39,21 +38,6 @@ const handleMouseOver = (num) => {
 const handleMouseUp = () => {
   startNum.value = null;
 };
-
-const shuffledAnswers = computed(() => {
-  const options = [
-    currentQuestion.value.a * currentQuestion.value.b,
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-  ];
-  return options.sort(() => Math.random() - 0.5);
-});
 
 const startQuiz = () => {
   correctAnswersCount.value = 0;
