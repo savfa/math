@@ -1,5 +1,39 @@
 <script setup lang="ts">
 import Page from "../../../_components/Page/Page.vue";
+import {ref} from "vue";
+
+const myTable = ref(null);
+let currentRowIndex = ref(-1);
+let currentCellIndex = ref(-1);
+
+const handleMouseOver = (rowIndex, cellIndex) => {
+  currentRowIndex.value = rowIndex;
+  currentCellIndex.value = cellIndex;
+  const rows = myTable.value.rows;
+
+  for (let i = 0; i < 1; i++) { // for (let i = 0; i < rowIndex; i++) {
+    rows[i].cells[cellIndex].classList.add('highlight');
+  }
+
+  for (let j = 0; j <= 0; j++) { // for (let j = 0; j <= cellIndex; j++) {
+    rows[rowIndex].cells[j].classList.add('highlight');
+  }
+};
+
+const handleMouseLeave = () => {
+  const rows = myTable.value.rows;
+
+  for (let i = 0; i < currentRowIndex.value; i++) {
+    rows[i].cells[currentCellIndex.value].classList.remove('highlight');
+  }
+
+  for (let j = 0; j <= currentCellIndex.value; j++) {
+    rows[currentRowIndex.value].cells[j].classList.remove('highlight');
+  }
+
+  currentRowIndex.value = -1;
+  currentCellIndex.value = -1;
+};
 </script>
 
 <template>
@@ -24,7 +58,7 @@ import Page from "../../../_components/Page/Page.vue";
 
     <div class="multiply">
       <p>Таблица Пифагора</p>
-      <table>
+      <table ref="myTable">
         <thead>
           <tr>
             <th>*</th>
@@ -34,7 +68,7 @@ import Page from "../../../_components/Page/Page.vue";
         <tbody>
           <tr v-for="i in 10" :key="`col-${i}`">
             <th>{{ i }}</th>
-            <td v-for="j in 10" :key="i * j">{{ i * j }}</td>
+            <td v-for="j in 10" :key="i * j" @mouseover="handleMouseOver(i, j)" @mouseleave="handleMouseLeave">{{ i * j }}</td>
           </tr>
         </tbody>
       </table>
@@ -58,7 +92,7 @@ import Page from "../../../_components/Page/Page.vue";
     border-collapse: collapse;
     width: 100%;
     margin: 0 auto;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
   th,
   td {
@@ -88,7 +122,10 @@ import Page from "../../../_components/Page/Page.vue";
     color: #333;
   }
   td:hover {
-    background-color: #ddd;
+    background-color: yellow;
+  }
+  .highlight {
+    background-color: yellow;
   }
 }
 </style>

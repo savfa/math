@@ -28,7 +28,7 @@ import MainFooter from "../MainFooter/MainFooter.vue";
 
 .layout {
   $root: &;
-  background: linear-gradient(to bottom right, white, blue);
+  background: linear-gradient(to bottom right, white, pink);
 
   &__container {
     display: grid;

@@ -44,15 +44,16 @@ const routes = Object.values(AppRoute);
     font-size: 18px;
     font-weight: bold;
     border-bottom: 4px solid transparent;
+    color: $color-velvet-primary;
 
     &:hover {
-      color: $color-blue-primary;
+      color: $color-velvet-tertiary;
     }
   }
 
   &__link_active {
-    color: $color-blue-primary;
-    border-bottom-color: $color-blue-primary;
+    color: $color-velvet-primary !important;
+    border-bottom-color: $color-velvet-primary !important;
   }
 }
 </style>
