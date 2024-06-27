@@ -143,52 +143,12 @@ watch(selectedRange, () => {
     }
   }
 
-  &__question-text {
-    font-size: 20px;
-    font-weight: bold;
-    padding: 1rem 0;
-  }
-
   &__results {
     font-size: 20px;
     font-weight: bold;
     display: flex;
     padding: 1rem 0;
     gap: 1rem;
-  }
-}
-
-.answers {
-  $root: &;
-  padding: 1rem 0;
-  display: grid;
-  grid-template: repeat(3, 50px) / repeat(3, 50px);
-  gap: 10px;
-  perspective: 800px;
-
-  &__item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid black;
-    cursor: pointer;
-    user-select: none;
-    background-color: white;
-    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-    transform-style: preserve-3d;
-
-    &:active {
-      transform: translateZ(-10px) scale(0.95);
-    }
-
-    &#{--correct} {
-      background-color: lightgreen;
-    }
-
-    &#{--incorrect} {
-      background-color: lightcoral;
-    }
   }
 }
 </style>
