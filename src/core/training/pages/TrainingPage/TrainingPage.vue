@@ -3,8 +3,8 @@ import { ref, watch } from "vue";
 import Page from "../../../_components/Page/Page.vue";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
 
-const selectedRange = ref(null);
-const startNum = ref(null);
+const selectedRange = ref<string>(``);
+const startNum = ref<string>(``);
 const currentQuestion = ref({});
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
@@ -25,7 +25,7 @@ const isInRange = (num) => {
 
 const handleMouseDown = (event) => {
   if (event.target.classList.contains("training__range-list-item")) {
-    startNum.value = Number(event.target.textContent);
+    startNum.value = String(Number(event.target.textContent));
   }
 };
 
@@ -36,7 +36,7 @@ const handleMouseOver = (num) => {
 };
 
 const handleMouseUp = () => {
-  startNum.value = null;
+  startNum.value = ``;
 };
 
 const startQuiz = () => {
