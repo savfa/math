@@ -5,9 +5,7 @@ import MainNav from "../MainNav/MainNav.vue";
 <template>
   <header class="main-header">
     <div class="main-header__wrap">
-      <h1 class="main-header__title">
-        Умножайка - учим таблицу умножения легко
-      </h1>
+      <h1 class="main-header__title">Умножайка - учим таблицу умножения</h1>
       <MainNav />
     </div>
   </header>
