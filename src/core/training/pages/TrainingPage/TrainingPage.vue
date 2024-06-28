@@ -24,19 +24,21 @@ const isInRange = (num) => {
 };
 
 const handleMouseDown = (event) => {
-  if (event.target.classList.contains("training__range-list-item")) {
-    startNum.value = String(Number(event.target.textContent));
-  }
+  startNum.value = String(Number(event.target.textContent));
+};
+const handleMouseUp = () => {
+  startNum.value = ``;
 };
 
 const handleMouseOver = (num) => {
   if (!startNum.value) return;
 
-  selectedRange.value = `${startNum.value}-${num}`;
-};
+  const prepareRange =
+    num > startNum.value
+      ? `${startNum.value}-${num}`
+      : `${num}-${startNum.value}`;
 
-const handleMouseUp = () => {
-  startNum.value = ``;
+  selectedRange.value = prepareRange;
 };
 
 const startQuiz = () => {
@@ -71,10 +73,10 @@ watch(selectedRange, () => {
 </script>
 
 <template>
-  <Page>
+  <Page @mouseup="handleMouseUp">
     <div class="training__range">
       <div class="training__range-text">Выберите диапазон чисел:</div>
-      <div class="training__range-list" @mousedown="handleMouseDown">
+      <div class="training__range-list">
         <div
           class="training__range-list-item"
           :class="{
@@ -83,8 +85,9 @@ watch(selectedRange, () => {
           }"
           v-for="num in 10"
           :key="num"
-          @mouseover="handleMouseOver(num)"
+          @mousedown="handleMouseDown"
           @mouseup="handleMouseUp"
+          @mouseover="handleMouseOver(num)"
         >
           {{ num }}
         </div>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, VueElement } from "vue";
 
 const props = defineProps<{
   question: { a: number; b: number };
   handleCheckAnswer: any;
 }>();
 
-const selectedAnswer = ref(null);
+const selectedAnswer = ref<VueElement | null>(null);
 
 const shuffledAnswers = computed(() => {
   const options = [
@@ -28,13 +28,13 @@ const checkAnswer = (answer, element) => {
   const isCorrectAnswer = answer === props.question.a * props.question.b;
 
   if (isCorrectAnswer) {
-    selectedAnswer.value.classList.add("question__answers-item--correct");
+    selectedAnswer.value?.classList.add("question__answers-item--correct");
   } else {
-    selectedAnswer.value.classList.add("question__answers-item--incorrect");
+    selectedAnswer.value?.classList.add("question__answers-item--incorrect");
   }
 
   setTimeout(() => {
-    selectedAnswer.value.classList.remove(
+    selectedAnswer.value?.classList.remove(
       "question__answers-item--correct",
       "question__answers-item--incorrect"
     );
