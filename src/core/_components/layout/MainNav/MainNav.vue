@@ -40,7 +40,7 @@ const routes = Object.values(AppRoute);
   }
 
   &__link {
-    padding: 0 26px;
+    padding: 0 26px 8px;
     font-size: 18px;
     font-weight: bold;
     border-bottom: 4px solid transparent;

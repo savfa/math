@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Page from "../../../_components/Page/Page.vue";
-import {ref} from "vue";
+import { ref } from "vue";
 
 const myTable = ref(null);
 let currentRowIndex = ref(-1);
@@ -11,12 +11,14 @@ const handleMouseOver = (rowIndex, cellIndex) => {
   currentCellIndex.value = cellIndex;
   const rows = myTable.value.rows;
 
-  for (let i = 0; i < 1; i++) { // for (let i = 0; i < rowIndex; i++) {
-    rows[i].cells[cellIndex].classList.add('highlight');
+  for (let i = 0; i < 1; i++) {
+    // for (let i = 0; i < rowIndex; i++) {
+    rows[i].cells[cellIndex].classList.add("highlight");
   }
 
-  for (let j = 0; j <= 0; j++) { // for (let j = 0; j <= cellIndex; j++) {
-    rows[rowIndex].cells[j].classList.add('highlight');
+  for (let j = 0; j <= 0; j++) {
+    // for (let j = 0; j <= cellIndex; j++) {
+    rows[rowIndex].cells[j].classList.add("highlight");
   }
 };
 
@@ -24,11 +26,11 @@ const handleMouseLeave = () => {
   const rows = myTable.value.rows;
 
   for (let i = 0; i < currentRowIndex.value; i++) {
-    rows[i].cells[currentCellIndex.value].classList.remove('highlight');
+    rows[i].cells[currentCellIndex.value].classList.remove("highlight");
   }
 
   for (let j = 0; j <= currentCellIndex.value; j++) {
-    rows[currentRowIndex.value].cells[j].classList.remove('highlight');
+    rows[currentRowIndex.value].cells[j].classList.remove("highlight");
   }
 
   currentRowIndex.value = -1;
@@ -68,7 +70,14 @@ const handleMouseLeave = () => {
         <tbody>
           <tr v-for="i in 10" :key="`col-${i}`">
             <th>{{ i }}</th>
-            <td v-for="j in 10" :key="i * j" @mouseover="handleMouseOver(i, j)" @mouseleave="handleMouseLeave">{{ i * j }}</td>
+            <td
+              v-for="j in 10"
+              :key="i * j"
+              @mouseover="handleMouseOver(i, j)"
+              @mouseleave="handleMouseLeave"
+            >
+              {{ i * j }}
+            </td>
           </tr>
         </tbody>
       </table>

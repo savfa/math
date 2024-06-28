@@ -14,3 +14,15 @@ export const getAppRouteName = (route: string) => {
       return ``;
   }
 };
+
+export const getNewQuestion = (
+  selectedRangeString: string,
+  number?: number
+) => {
+  const [min, max] = selectedRangeString.split("-").map(Number);
+  return {
+    num: number || 1,
+    a: Math.floor(Math.random() * (max - min + 1)) + min,
+    b: Math.floor(Math.random() * (max - min + 1)) + min,
+  };
+};
