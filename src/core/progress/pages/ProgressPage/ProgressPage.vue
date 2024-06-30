@@ -1,5 +1,7 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Page from "../../../_components/Page/Page.vue";
+</script>
 
-<template>главная</template>
+<template><Page></Page></template>
 
 <style scoped lang="scss"></style>

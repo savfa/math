@@ -1,31 +1,69 @@
 <script setup lang="ts">
-import { computed, ref, VueElement } from "vue";
+import { computed, ref, VueElement, watch } from "vue";
+import { MathType } from "../../../helpers/consts/consts.ts";
 
 const props = defineProps<{
-  question: { a: number; b: number };
+  mathType: string;
+  question: { num: number; a: number; b: number };
   handleCheckAnswer: any;
+  maxShuffle?: number;
 }>();
 
 const selectedAnswer = ref<VueElement | null>(null);
 
+const getMathTypeConfig = (type: string) => {
+  switch (type) {
+    case MathType.ADDITION:
+      return { maxNum: 20, operator: `+` };
+    case MathType.SUBTRACTION:
+      return { maxNum: 20, operator: `-` };
+    case MathType.MULTIPLICATION:
+      return { maxNum: 100, operator: `*` };
+    default:
+      return { maxNum: 20, operator: `+` };
+  }
+};
+
+const maxNum = computed(() => getMathTypeConfig(props.mathType).maxNum);
+const operator = computed(() => getMathTypeConfig(props.mathType).operator);
+
+const calculate = (a: number, b: number, operator: string) => {
+  switch (operator) {
+    case "+":
+      return a + b;
+    case "-":
+      return a > b ? a - b : b - a;
+    case "*":
+      return a * b;
+    default:
+      return a + b;
+  }
+};
+
 const shuffledAnswers = computed(() => {
-  const options = [
-    props.question.a * props.question.b,
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-    Math.floor(Math.random() * 100),
-  ];
-  return options.sort(() => Math.random() - 0.5);
+  const options = new Set([
+    calculate(props.question.a, props.question.b, operator.value),
+    Math.floor(Math.random() * maxNum.value + 1),
+    Math.floor(Math.random() * maxNum.value + 1),
+    Math.floor(Math.random() * maxNum.value + 1),
+    Math.floor(Math.random() * maxNum.value + 1),
+    Math.floor(Math.random() * maxNum.value + 1),
+    Math.floor(Math.random() * maxNum.value + 1),
+    Math.floor(Math.random() * maxNum.value + 1),
+    Math.floor(Math.random() * maxNum.value + 1),
+  ]);
+
+  while (options.size !== 9) {
+    options.add(Math.floor(Math.random() * maxNum.value + 1));
+  }
+
+  return [...options].sort(() => Math.random() - 0.5);
 });
 
 const checkAnswer = (answer, element) => {
   selectedAnswer.value = element;
-  const isCorrectAnswer = answer === props.question.a * props.question.b;
+  const isCorrectAnswer =
+    answer === calculate(props.question.a, props.question.b, operator.value);
 
   if (isCorrectAnswer) {
     selectedAnswer.value?.classList.add("question__answers-item--correct");
@@ -47,7 +85,13 @@ const checkAnswer = (answer, element) => {
 <template>
   <div class="question">
     <div class="question__text">
-      Вопрос: {{ question.a }} * {{ question.b }} = ?
+      Вопрос:
+      {{
+        mathType === MathType.SUBTRACTION && question.a < question.b
+          ? `${question.b} ${operator} ${question.a}`
+          : `${question.a} ${operator} ${question.b}`
+      }}
+      = ?
     </div>
 
     <div class="question__answers">

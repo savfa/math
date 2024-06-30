@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { MathType } from "../../../../../helpers/consts/consts.ts";
 
 const props = defineProps<{
+  mathType: string;
   selectedRange: any;
 }>();
 
@@ -10,12 +12,25 @@ const emit = defineEmits<{
 }>();
 
 const startNum = ref<string>(``);
-
 const isSelected = computed(() => (num) => {
   return (
     props.selectedRange &&
     props.selectedRange.split("-").map(Number).includes(num)
   );
+});
+
+const prepareMaxNumRange = computed(() => {
+  switch (props.mathType) {
+    case MathType.ADDITION:
+      return 10;
+    case MathType.SUBTRACTION:
+      return 20;
+    case MathType.MULTIPLICATION:
+      return 10;
+
+    default:
+      return 10;
+  }
 });
 
 const isInRange = computed(() => (num) => {
@@ -98,7 +113,7 @@ const handleTouchMove = computed(() => (event) => {
           selected: isSelected(num),
           'range-selected': isInRange(num),
         }"
-        v-for="num in 10"
+        v-for="num in prepareMaxNumRange"
         :key="num"
         @mousedown="handleMouseDown"
         @mouseup="handleMouseUp"

@@ -1,11 +1,22 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from "vue";
+
+const props = defineProps<{
   handleClick: any;
+  isButtonTab?: boolean;
+  isActive?: boolean;
 }>();
+
+const buttonStylesObj = computed(() => ({
+  button: true,
+  "glow-on-hover": !props.isButtonTab,
+  "button-tab": props.isButtonTab,
+  "button-tab--active": props.isButtonTab && props.isActive,
+}));
 </script>
 
 <template>
-  <button class="styled-button glow-on-hover" @click="handleClick">
+  <button :class="buttonStylesObj" @click="handleClick">
     <slot />
   </button>
 </template>
@@ -25,7 +36,7 @@ defineProps<{
   }
 }
 
-.styled-button {
+.button {
   $root: &;
 
   display: flex;
@@ -94,6 +105,16 @@ defineProps<{
       left: 0;
       top: 0;
       border-radius: 50px;
+    }
+  }
+
+  &.button-tab {
+    background: white;
+    color: #000;
+    border: 1px solid #000;
+
+    &--active {
+      background: lightgreen;
     }
   }
 }

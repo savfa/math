@@ -4,10 +4,12 @@ import Page from "../../../_components/Page/Page.vue";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
 import SelectedRange from "../../../training/components/trainingPage/SelectedRange/SelectedRange.vue";
 import AnswersResult from "../../../_components/AnswersResult/AnswersResult.vue";
+import MathTypeTabs from "../../../_components/MathTypeTabs/MathTypeTabs.vue";
 import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
+import { MathType } from "../../../../helpers/consts/consts.ts";
 
+const mathType = ref(MathType.ADDITION);
 const selectedRange = ref<any>(``);
-
 const currentQuestion = ref({});
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
@@ -37,13 +39,21 @@ watch(selectedRange, () => {
 
 <template>
   <Page class="training-page">
+    <MathTypeTabs
+      :mathType="mathType"
+      @setMathType="mathType = $event"
+      @setSelectedRange="selectedRange = $event"
+    />
+
     <SelectedRange
+      :mathType="mathType"
       :selectedRange="selectedRange"
       @setSelectedRange="selectedRange = $event"
     />
 
     <div v-if="selectedRange">
       <QuestionAnswers
+        :mathType="mathType"
         :handleCheckAnswer="handleCheckAnswer"
         :question="currentQuestion"
       />

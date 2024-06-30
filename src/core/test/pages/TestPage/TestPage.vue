@@ -5,10 +5,12 @@ import AppButton from "../../../_components/_ui-kit/AppButton/AppButton.vue";
 import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
 import AnswersResult from "../../../_components/AnswersResult/AnswersResult.vue";
+import MathTypeTabs from "../../../_components/MathTypeTabs/MathTypeTabs.vue";
+import { MathType } from "../../../../helpers/consts/consts.ts";
 
+const mathType = ref(MathType.ADDITION);
 const isStartTesting = ref(false);
 const isFinishedTesting = ref(false);
-
 const currentQuestion = ref<{ num: number; a: number; b: number } | null>(null);
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
@@ -30,7 +32,7 @@ const handleCheckAnswer = (isCorrect) => {
 
   setTimeout(() => {
     currentQuestion.value = getNewQuestion(
-      `1-10`,
+      mathType.value === MathType.SUBTRACTION ? `1-20` : `1-10`,
       currentQuestion.value?.num + 1
     );
   }, 500);
@@ -45,33 +47,42 @@ watch(currentQuestion, () => {
 
 <template>
   <Page class="test-page">
-    <div class="test-page__start" v-if="!isStartTesting && !isFinishedTesting">
-      <div class="selected-range__text">Давай проверим твои знания!</div>
-      <AppButton :handleClick="handleStartTesting"
-        >Начать тестирование</AppButton
+    <div class="test-page__content">
+      <template v-if="!isStartTesting && !isFinishedTesting">
+        <div class="selected-range__text">Давай проверим твои знания!</div>
+      </template>
+
+      <template
+        v-if="(!isStartTesting && !isFinishedTesting) || isFinishedTesting"
       >
-    </div>
+        <MathTypeTabs
+          :mathType="mathType"
+          @setMathType="mathType = $event"
+          @setSelectedRange="() => ``"
+        />
 
-    <div
-      class="test-page__progress"
-      v-if="isStartTesting && !isFinishedTesting"
-    >
-      <div>{{ currentQuestion?.num || 1 }} / 15</div>
-      <QuestionAnswers
-        :handleCheckAnswer="handleCheckAnswer"
-        :question="currentQuestion"
-      />
-    </div>
+        <template v-if="isFinishedTesting">
+          <AnswersResult
+            :correctAnswersCount="correctAnswersCount"
+            :inCorrectAnswersCount="inCorrectAnswersCount"
+          />
+        </template>
+        <AppButton :handleClick="handleStartTesting"
+          >Начать тестирование</AppButton
+        >
+      </template>
 
-    <div class="test-page__finished" v-if="isFinishedTesting">
-      <AnswersResult
-        :correctAnswersCount="correctAnswersCount"
-        :inCorrectAnswersCount="inCorrectAnswersCount"
-      />
-
-      <AppButton :handleClick="handleStartTesting"
-        >Начать тестирование</AppButton
+      <div
+        class="test-page__progress"
+        v-if="isStartTesting && !isFinishedTesting"
       >
+        <div>{{ currentQuestion?.num || 1 }} / 15</div>
+        <QuestionAnswers
+          :mathType="mathType"
+          :handleCheckAnswer="handleCheckAnswer"
+          :question="currentQuestion"
+        />
+      </div>
     </div>
   </Page>
 </template>
@@ -83,7 +94,7 @@ watch(currentQuestion, () => {
   font-size: 20px;
   font-weight: bold;
 
-  &__start {
+  &__content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
