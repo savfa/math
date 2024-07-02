@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import Page from "../../../_components/Page/Page.vue";
-import { ref, watch } from "vue";
+import { ref, watch, inject } from "vue";
 import AppButton from "../../../_components/_ui-kit/AppButton/AppButton.vue";
 import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
 import AnswersResult from "../../../_components/AnswersResult/AnswersResult.vue";
 import MathTypeTabs from "../../../_components/MathTypeTabs/MathTypeTabs.vue";
 import { MathType } from "../../../../helpers/consts/consts.ts";
+import TimerTime from "../../../_components/TimerTime.vue";
 
 const mathType = ref(MathType.ADDITION);
 const isStartTesting = ref(false);
 const isFinishedTesting = ref(false);
+const timeString = ref(``);
+const fieldName = ref(`Катя`);
 const currentQuestion = ref<{ num: number; a: number; b: number } | null>(null);
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
@@ -18,6 +21,7 @@ const inCorrectAnswersCount = ref(0);
 const handleStartTesting = () => {
   isStartTesting.value = true;
   isFinishedTesting.value = false;
+  timeString.value = ``;
   correctAnswersCount.value = 0;
   inCorrectAnswersCount.value = 0;
   currentQuestion.value = getNewQuestion(`1-10`);
@@ -38,9 +42,23 @@ const handleCheckAnswer = (isCorrect) => {
   }, 500);
 };
 
+const progressLogs = inject("progressLogs");
+
 watch(currentQuestion, () => {
   if (currentQuestion.value?.num === 16) {
+    isStartTesting.value = false;
     isFinishedTesting.value = true;
+    progressLogs.value = [
+      ...progressLogs.value,
+      {
+        id: 1,
+        name: fieldName.value,
+        mathType: mathType.value,
+        inCorrectAnswersCount: inCorrectAnswersCount.value,
+        timeString,
+        createdAt: new Date().toISOString(),
+      },
+    ];
   }
 });
 </script>
@@ -49,17 +67,24 @@ watch(currentQuestion, () => {
   <Page class="test-page">
     <div class="test-page__content">
       <template v-if="!isStartTesting && !isFinishedTesting">
-        <div class="selected-range__text">Давай проверим твои знания!</div>
+        <div class="selected-range__text">Давай проверим твои знания?</div>
       </template>
 
       <template
         v-if="(!isStartTesting && !isFinishedTesting) || isFinishedTesting"
       >
-        <MathTypeTabs
-          :mathType="mathType"
-          @setMathType="mathType = $event"
-          @setSelectedRange="() => ``"
-        />
+        <div class="test-page__field">
+          <label for="name" class="test-page__field-label">Ваше имя: </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            class="test-page__field-input"
+            v-model="fieldName"
+          />
+        </div>
+
+        <MathTypeTabs v-model:mathType="mathType" />
 
         <template v-if="isFinishedTesting">
           <AnswersResult
@@ -67,7 +92,7 @@ watch(currentQuestion, () => {
             :inCorrectAnswersCount="inCorrectAnswersCount"
           />
         </template>
-        <AppButton :handleClick="handleStartTesting"
+        <AppButton isGlowOnHover :handleClick="handleStartTesting"
           >Начать тестирование</AppButton
         >
       </template>
@@ -76,7 +101,14 @@ watch(currentQuestion, () => {
         class="test-page__progress"
         v-if="isStartTesting && !isFinishedTesting"
       >
-        <div>{{ currentQuestion?.num || 1 }} / 15</div>
+        <div class="test-page__progress-info">
+          <div>{{ currentQuestion?.num || 1 }} / 15</div>
+          <TimerTime
+            :isStartTimer="isStartTesting"
+            v-model:timeString="timeString"
+          />
+        </div>
+
         <QuestionAnswers
           :mathType="mathType"
           :handleCheckAnswer="handleCheckAnswer"
@@ -88,17 +120,54 @@ watch(currentQuestion, () => {
 </template>
 
 <style scoped lang="scss">
+@import "../../../../common/styles/dependencies";
+
 .test-page {
   $root: &;
 
   font-size: 20px;
   font-weight: bold;
 
+  &__field {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+
+    &-label {
+      font-size: 18px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    &-input {
+      max-width: 300px;
+      height: 40px;
+      padding: 0 10px;
+      font-size: 16px;
+      border: 2px solid $color-velvet-primary;
+      border-radius: 50px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+
+      &:focus {
+        border-color: $color-velvet-tertiary;
+      }
+    }
+  }
+
   &__content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+  }
+
+  &__progress {
+    &-info {
+      display: flex;
+      gap: 1rem;
+    }
   }
 }
 </style>

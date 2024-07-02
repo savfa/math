@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, VueElement, watch } from "vue";
+import { computed, ref, VueElement } from "vue";
 import { MathType } from "../../../helpers/consts/consts.ts";
 
 const props = defineProps<{

@@ -24,6 +24,10 @@ import MainNav from "../MainNav/MainNav.vue";
 
   &__title {
     text-align: center;
+
+    @include media-breakpoint-down(sm) {
+      font-size: 20px;
+    }
   }
 }
 </style>

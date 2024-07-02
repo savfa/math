@@ -2,21 +2,26 @@
 import { computed } from "vue";
 
 const props = defineProps<{
-  handleClick: any;
+  isGlowOnHover?: boolean;
+  handleClick?: any;
   isButtonTab?: boolean;
   isActive?: boolean;
+  isButtonTag?: boolean;
+  style?: any;
+  [key: string];
 }>();
 
 const buttonStylesObj = computed(() => ({
   button: true,
-  "glow-on-hover": !props.isButtonTab,
+  "glow-on-hover": props.isGlowOnHover,
   "button-tab": props.isButtonTab,
   "button-tab--active": props.isButtonTab && props.isActive,
+  "button-tag": props.isButtonTag,
 }));
 </script>
 
 <template>
-  <button :class="buttonStylesObj" @click="handleClick">
+  <button :class="buttonStylesObj" @click="handleClick" :style="style">
     <slot />
   </button>
 </template>
@@ -50,6 +55,7 @@ const buttonStylesObj = computed(() => ({
   font-size: 16px;
   font-weight: bold;
   padding: 12px 24px;
+  margin: 0;
   transition: 0.3s ease all;
   position: relative;
   z-index: 0;
@@ -116,6 +122,14 @@ const buttonStylesObj = computed(() => ({
     &--active {
       background: lightgreen;
     }
+  }
+
+  &.button-tag {
+    background: white;
+    color: #000;
+    border: 1px solid #000;
+    cursor: default;
+    padding: 4px 16px;
   }
 }
 </style>

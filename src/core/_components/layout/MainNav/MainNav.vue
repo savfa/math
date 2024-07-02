@@ -34,13 +34,14 @@ const routes = Object.values(AppRoute);
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    gap: 1rem;
   }
 
   &__item {
   }
 
   &__link {
-    padding: 0 26px 8px;
+    padding: 0 16px 8px;
     font-size: 18px;
     font-weight: bold;
     border-bottom: 4px solid transparent;

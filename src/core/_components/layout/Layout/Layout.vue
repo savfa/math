@@ -32,7 +32,7 @@ import MainFooter from "../MainFooter/MainFooter.vue";
 
   &__container {
     display: grid;
-    grid-template: 100px 1fr 50px / 1fr;
+    grid-template: auto 1fr 50px / 1fr;
     grid-template-areas:
       "header"
       "main"

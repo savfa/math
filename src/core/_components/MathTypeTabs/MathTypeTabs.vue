@@ -1,25 +1,20 @@
 <script setup lang="ts">
 import AppButton from "../_ui-kit/AppButton/AppButton.vue";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { MathType } from "../../../helpers/consts/consts.ts";
+import { getMathTypeFormat } from "../../../helpers/utils/utils.ts";
 
-const props = defineProps<{
-  mathType: string;
-}>();
-
-const emit = defineEmits<{
-  (e: "setMathType", newState: string): void;
-  (e: "setSelectedRange", newState: string): void;
-}>();
+const mathType = defineModel("mathType");
+const selectedRange = defineModel("selectedRange");
 
 const getIsActive = computed(() => (tabType: string) => {
-  return props.mathType === tabType;
+  return mathType.value === tabType;
 });
 
 const handleMathType = computed(() => (tabType: string) => {
-  emit("setMathType", tabType);
-  if (props.mathType !== tabType) {
-    emit("setSelectedRange", ``);
+  mathType.value = tabType;
+  if (mathType.value !== tabType) {
+    selectedRange.value = ``;
   }
 });
 </script>
@@ -31,21 +26,21 @@ const handleMathType = computed(() => (tabType: string) => {
       :isActive="getIsActive(MathType.ADDITION)"
       :handleClick="() => handleMathType(MathType.ADDITION)"
     >
-      Сложение
+      {{ getMathTypeFormat(MathType.ADDITION) }}
     </AppButton>
     <AppButton
       isButtonTab
       :isActive="getIsActive(MathType.SUBTRACTION)"
       :handleClick="() => handleMathType(MathType.SUBTRACTION)"
     >
-      Вычитание
+      {{ getMathTypeFormat(MathType.SUBTRACTION) }}
     </AppButton>
     <AppButton
       isButtonTab
       :isActive="getIsActive(MathType.MULTIPLICATION)"
       :handleClick="() => handleMathType(MathType.MULTIPLICATION)"
     >
-      Умножение
+      {{ getMathTypeFormat(MathType.MULTIPLICATION) }}
     </AppButton>
   </div>
 </template>
@@ -55,6 +50,8 @@ const handleMathType = computed(() => (tabType: string) => {
   $root: &;
 
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   padding: 1rem 0;
 }
 </style>

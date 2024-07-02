@@ -40,15 +40,13 @@ watch(selectedRange, () => {
 <template>
   <Page class="training-page">
     <MathTypeTabs
-      :mathType="mathType"
-      @setMathType="mathType = $event"
-      @setSelectedRange="selectedRange = $event"
+      v-model:mathType="mathType"
+      v-model:selectedRange="selectedRange"
     />
 
     <SelectedRange
-      :mathType="mathType"
-      :selectedRange="selectedRange"
-      @setSelectedRange="selectedRange = $event"
+      v-model:mathType="mathType"
+      v-model:selectedRange="selectedRange"
     />
 
     <div v-if="selectedRange">
