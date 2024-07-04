@@ -4,7 +4,7 @@ export const MathType = {
   MULTIPLICATION: `MULTIPLICATION`,
 };
 
-export const months = [
+export const months: string[] = [
   "январь",
   "февраль",
   "март",
@@ -19,7 +19,7 @@ export const months = [
   "декабрь",
 ];
 
-export const monthsDeclensions = [
+export const monthsDeclensions: string[] = [
   "января",
   "февраля",
   "марта",

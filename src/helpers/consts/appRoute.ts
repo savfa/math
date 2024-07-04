@@ -1,5 +1,5 @@
 export const ROUTE_ID = `:id`;
-const BASE_URL = `http://localhost:3001/api/math`;
+const BASE_URL = `http://math-server.evgeniysavin.ru/api/math`;
 
 export const AppRoute = {
   MAIN: "/",

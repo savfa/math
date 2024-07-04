@@ -1,4 +1,6 @@
-<script setup>
+<script setup lang="ts">
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
@@ -7,8 +9,10 @@ defineOptions({
 });
 
 const props = defineProps({
-  ...RouterLink.props,
+  ...(RouterLink as any).props,
   inactiveClass: String,
+  activeClass: String,
+  to: [String, undefined],
 });
 
 const isExternalLink = computed(() => {
@@ -20,12 +24,7 @@ const isExternalLink = computed(() => {
   <a v-if="isExternalLink" v-bind="$attrs" :href="to" target="_blank">
     <slot />
   </a>
-  <router-link
-    v-else
-    v-bind="$props"
-    custom
-    v-slot="{ isActive, href, navigate }"
-  >
+  <router-link v-else v-bind="$props" v-slot="{ isActive, href, navigate }">
     <a
       v-bind="$attrs"
       :href="href"

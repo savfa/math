@@ -13,7 +13,7 @@ import {
 } from "../../../../helpers/operations/logsOperation.ts";
 import PaginationNumeric from "../../../_components/_ui-kit/PaginationNumeric.vue";
 
-const progressLogs = inject("progressLogs");
+const progressLogs = inject<any>("progressLogs");
 
 const handleFilterLogs = (page: number) => {
   LogsOperation.filterLogs({ page }).then(
@@ -31,7 +31,7 @@ onMounted(() => {
 });
 
 const hashLogs = computed(() =>
-  progressLogs.value.logs.reduce((res, log) => {
+  progressLogs.value.logs.reduce((res: any, log: any) => {
     const date = new Date(log.createdAt);
     // получаем год
     const year = date.getFullYear();
@@ -64,7 +64,7 @@ const hashLogs = computed(() =>
       >
         <div>
           <AppButton isButtonTag :style="{ margin: '1rem auto' }">
-            {{ months[month] }}
+            {{ months[month as any] }}
           </AppButton>
 
           <table class="log-table">
@@ -85,7 +85,7 @@ const hashLogs = computed(() =>
               >
                 <td>
                   {{ new Date(log[`createdAt`]).getDate() }}
-                  {{ monthsDeclensions[month] }}
+                  {{ monthsDeclensions[month as any] }}
                 </td>
                 <td>{{ log.name }}</td>
                 <td>{{ getMathTypeFormat(log[`mathType`]) }}</td>

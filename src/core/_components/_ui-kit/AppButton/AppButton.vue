@@ -8,7 +8,6 @@ const props = defineProps<{
   isActive?: boolean;
   isButtonTag?: boolean;
   style?: any;
-  [key: string];
 }>();
 
 const buttonStylesObj = computed(() => ({

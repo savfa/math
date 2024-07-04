@@ -5,12 +5,12 @@ import { computed } from "vue";
 const props = defineProps<{
   links: any;
   handlePage: any;
-  perPage;
+  perPage: number;
 }>();
 
-const { width: currentWindowWidth } = useWindowSize();
+const { width: currentWindowWidth }: { width: any } = useWindowSize();
 
-const isDesktop = computed(() => currentWindowWidth >= 1024);
+const isDesktop = computed(() => currentWindowWidth.value >= 1024);
 
 const defaultPaginationCount = computed(() => {
   return isDesktop.value ? 11 : 7; // isDesktop
@@ -21,7 +21,7 @@ const pagesCount = computed(() =>
 );
 
 const defaultNums = computed(() =>
-  Array.from({ length: pagesCount.value }).map((it, i) => i + 1)
+  Array.from({ length: pagesCount.value }).map((_it, i: number) => i + 1)
 );
 
 const paginationNumbers = computed(() => {

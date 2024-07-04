@@ -20,7 +20,7 @@ const startQuiz = () => {
   currentQuestion.value = getNewQuestion(selectedRange.value);
 };
 
-const handleCheckAnswer = (isCorrect) => {
+const handleCheckAnswer = (isCorrect: boolean) => {
   if (isCorrect) {
     correctAnswersCount.value++;
   } else {

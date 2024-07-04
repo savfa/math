@@ -31,7 +31,7 @@ const handleStartTesting = () => {
   currentQuestion.value = getNewQuestion(`1-10`);
 };
 
-const handleCheckAnswer = (isCorrect) => {
+const handleCheckAnswer = (isCorrect: boolean) => {
   if (isCorrect) {
     correctAnswersCount.value++;
   } else {
@@ -41,12 +41,12 @@ const handleCheckAnswer = (isCorrect) => {
   setTimeout(() => {
     currentQuestion.value = getNewQuestion(
       mathType.value === MathType.SUBTRACTION ? `1-20` : `1-10`,
-      currentQuestion.value?.num + 1
+      (currentQuestion.value?.num || 1) + 1
     );
   }, 500);
 };
 
-const progressLogs = inject("progressLogs");
+const progressLogs = inject<any>("progressLogs");
 
 watch(currentQuestion, () => {
   if (currentQuestion.value?.num === 16) {
