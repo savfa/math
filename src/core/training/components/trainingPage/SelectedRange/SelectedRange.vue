@@ -3,10 +3,10 @@ import { computed, ref } from "vue";
 import { MathType } from "../../../../../helpers/consts/consts.ts";
 
 const mathType = defineModel("mathType");
-const selectedRange = defineModel("selectedRange");
+const selectedRange = defineModel<any>("selectedRange");
 
 const startNum = ref<string>(``);
-const isSelected = computed(() => (num) => {
+const isSelected = computed(() => (num: number) => {
   return (
     selectedRange.value &&
     selectedRange.value.split("-").map(Number).includes(num)
@@ -27,32 +27,32 @@ const prepareMaxNumRange = computed(() => {
   }
 });
 
-const isInRange = computed(() => (num) => {
+const isInRange = computed(() => (num: number) => {
   if (!selectedRange.value) return false;
 
   const [start, end] = selectedRange.value.split("-").map(Number);
   return num >= start && num <= end;
 });
 
-const handleMouseDown = computed(() => (event) => {
+const handleMouseDown = computed(() => (event: any) => {
   startNum.value = String(Number(event.target.textContent));
 });
 const handleMouseUp = computed(() => () => {
   startNum.value = ``;
 });
 
-const handleMouseOver = computed(() => (num) => {
+const handleMouseOver = computed(() => (num: number) => {
   if (!startNum.value) return;
 
   const prepareRange =
-    num > startNum.value
+    num > +startNum.value
       ? `${startNum.value}-${num}`
       : `${num}-${startNum.value}`;
 
   selectedRange.value = prepareRange;
 });
 
-const handleTouchStart = computed(() => (event) => {
+const handleTouchStart = computed(() => (event: any) => {
   startNum.value = String(Number(event.target.textContent));
 });
 
@@ -60,7 +60,7 @@ const handleTouchEnd = computed(() => () => {
   startNum.value = ``;
 });
 
-const handleTouchMove = computed(() => (event) => {
+const handleTouchMove = computed(() => (event: any) => {
   if (!startNum.value) return;
 
   const touch = event.changedTouches[0];

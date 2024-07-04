@@ -2,11 +2,11 @@
 import Page from "../../../_components/_ui-kit/Page/Page.vue";
 import { ref } from "vue";
 
-const myTable = ref(null);
+const myTable = ref<any>(null);
 let currentRowIndex = ref(-1);
 let currentCellIndex = ref(-1);
 
-const handleMouseOver = (rowIndex, cellIndex) => {
+const handleMouseOver = (rowIndex: number, cellIndex: number) => {
   currentRowIndex.value = rowIndex;
   currentCellIndex.value = cellIndex;
   const rows = myTable.value.rows;

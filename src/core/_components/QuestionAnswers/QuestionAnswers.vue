@@ -4,7 +4,7 @@ import { MathType } from "../../../helpers/consts/consts.ts";
 
 const props = defineProps<{
   mathType: string;
-  question: { num: number; a: number; b: number };
+  question: any;
   handleCheckAnswer: any;
   maxShuffle?: number;
 }>();
@@ -60,7 +60,7 @@ const shuffledAnswers = computed(() => {
   return [...options].sort(() => Math.random() - 0.5);
 });
 
-const checkAnswer = (answer, element) => {
+const checkAnswer = (answer: any, element: any) => {
   selectedAnswer.value = element;
   const isCorrectAnswer =
     answer === calculate(props.question.a, props.question.b, operator.value);
