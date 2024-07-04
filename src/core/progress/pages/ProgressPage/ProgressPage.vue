@@ -1,17 +1,37 @@
 <script setup lang="ts">
-import Page from "../../../_components/Page/Page.vue";
-import { computed, inject } from "vue";
+import Page from "../../../_components/_ui-kit/Page/Page.vue";
+import { computed, inject, onMounted } from "vue";
 import { getMathTypeFormat } from "../../../../helpers/utils/utils.ts";
 import {
   months,
   monthsDeclensions,
 } from "../../../../helpers/consts/consts.ts";
 import AppButton from "../../../_components/_ui-kit/AppButton/AppButton.vue";
+import {
+  LOGS_PER_PAGE,
+  LogsOperation,
+} from "../../../../helpers/operations/logsOperation.ts";
+import PaginationNumeric from "../../../_components/_ui-kit/PaginationNumeric.vue";
 
 const progressLogs = inject("progressLogs");
 
+const handleFilterLogs = (page: number) => {
+  LogsOperation.filterLogs({ page }).then(
+    ({ logs, links }) =>
+      (progressLogs.value = {
+        ...progressLogs.value,
+        logs,
+        links,
+      })
+  );
+};
+
+onMounted(() => {
+  handleFilterLogs(1);
+});
+
 const hashLogs = computed(() =>
-  progressLogs.value.reduce((res, log) => {
+  progressLogs.value.logs.reduce((res, log) => {
     const date = new Date(log.createdAt);
     // получаем год
     const year = date.getFullYear();
@@ -70,10 +90,16 @@ const hashLogs = computed(() =>
                 <td>{{ log.name }}</td>
                 <td>{{ getMathTypeFormat(log[`mathType`]) }}</td>
                 <td>{{ log[`timeString`] }}</td>
-                <td>{{ log[`inCorrectAnswersCount`] }}</td>
+                <td>{{ log[`incorrectAnswersCount`] }}</td>
               </tr>
             </tbody>
           </table>
+
+          <PaginationNumeric
+            :links="progressLogs.links"
+            :handlePage="handleFilterLogs"
+            :perPage="LOGS_PER_PAGE"
+          />
         </div>
       </div>
     </div>

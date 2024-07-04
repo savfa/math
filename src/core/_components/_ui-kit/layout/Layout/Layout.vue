@@ -24,7 +24,7 @@ import MainFooter from "../MainFooter/MainFooter.vue";
 </template>
 
 <style scoped lang="scss">
-@import "../../../../common/styles/dependencies";
+@import "../../../../../common/styles/dependencies";
 
 .layout {
   $root: &;

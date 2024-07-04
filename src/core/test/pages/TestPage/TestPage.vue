@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Page from "../../../_components/Page/Page.vue";
+import Page from "../../../_components/_ui-kit/Page/Page.vue";
 import { ref, watch, inject } from "vue";
 import AppButton from "../../../_components/_ui-kit/AppButton/AppButton.vue";
 import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
@@ -8,6 +8,10 @@ import AnswersResult from "../../../_components/AnswersResult/AnswersResult.vue"
 import MathTypeTabs from "../../../_components/MathTypeTabs/MathTypeTabs.vue";
 import { MathType } from "../../../../helpers/consts/consts.ts";
 import TimerTime from "../../../_components/TimerTime.vue";
+import {
+  LOGS_PER_PAGE,
+  LogsOperation,
+} from "../../../../helpers/operations/logsOperation.ts";
 
 const mathType = ref(MathType.ADDITION);
 const isStartTesting = ref(false);
@@ -48,17 +52,25 @@ watch(currentQuestion, () => {
   if (currentQuestion.value?.num === 16) {
     isStartTesting.value = false;
     isFinishedTesting.value = true;
-    progressLogs.value = [
-      ...progressLogs.value,
+
+    LogsOperation.createLog(
       {
-        id: 1,
         name: fieldName.value,
         mathType: mathType.value,
         inCorrectAnswersCount: inCorrectAnswersCount.value,
-        timeString,
-        createdAt: new Date().toISOString(),
+        timeString: timeString.value,
       },
-    ];
+      (log: any) => {
+        progressLogs.value = {
+          ...progressLogs.value,
+          logs: [log, ...progressLogs.value.logs].slice(0, LOGS_PER_PAGE),
+          links: {
+            ...progressLogs.value.links,
+            objectsCount: (progressLogs.value.links.objectsCount || 0) + 1,
+          },
+        };
+      }
+    );
   }
 });
 </script>

@@ -14,7 +14,7 @@ import MainNav from "../MainNav/MainNav.vue";
 </template>
 
 <style scoped lang="scss">
-@import "../../../../common/styles/dependencies";
+@import "../../../../../common/styles/dependencies";
 
 .main-header {
   $root: &;

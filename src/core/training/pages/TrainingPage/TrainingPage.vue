@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import Page from "../../../_components/Page/Page.vue";
+import Page from "../../../_components/_ui-kit/Page/Page.vue";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
 import SelectedRange from "../../../training/components/trainingPage/SelectedRange/SelectedRange.vue";
 import AnswersResult from "../../../_components/AnswersResult/AnswersResult.vue";

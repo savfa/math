@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Page from "../../../_components/Page/Page.vue";
+import Page from "../../../_components/_ui-kit/Page/Page.vue";
 import { ref } from "vue";
 
 const myTable = ref(null);

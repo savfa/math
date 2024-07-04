@@ -1,4 +1,5 @@
 export const ROUTE_ID = `:id`;
+const BASE_URL = `http://localhost:3001/api/math`;
 
 export const AppRoute = {
   MAIN: "/",
@@ -6,6 +7,8 @@ export const AppRoute = {
   TEST: "/test",
   PROGRESS: "/progress",
 };
+
 export const ServerURL = {
-  // SITE: `/api/sites/public/content/`,
+  LOGS: `${BASE_URL}/logs/`,
+  FILTER_LOGS: `${BASE_URL}/logs/filter/`,
 };

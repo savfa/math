@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { AppRoute } from "../../../../helpers/consts/appRoute.ts";
-import { getAppRouteName } from "../../../../helpers/utils/utils.ts";
-import AppLink from "../../AppLink/AppLink.vue";
+import { AppRoute } from "../../../../../helpers/consts/appRoute.ts";
+import { getAppRouteName } from "../../../../../helpers/utils/utils.ts";
+import AppLink from "../../../AppLink/AppLink.vue";
 
 const routes = Object.values(AppRoute);
 </script>
@@ -22,7 +22,7 @@ const routes = Object.values(AppRoute);
 </template>
 
 <style lang="scss">
-@import "../../../../common/styles/dependencies";
+@import "../../../../../common/styles/dependencies";
 
 .nav-bar {
   //@include media-breakpoint-down(l) {}
