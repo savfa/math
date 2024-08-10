@@ -51,7 +51,7 @@ const hashLogs = computed(() =>
 <template>
   <Page class="progress-page">
     <div class="year" v-for="year in Object.keys(hashLogs)" :key="year">
-      <template v-if="Object.keys(hashLogs).length > 1">
+      <template v-if="+year < new Date().getFullYear()">
         <AppButton isButtonTag :style="{ margin: '1rem auto' }">
           {{ year }} год
         </AppButton>
@@ -59,7 +59,7 @@ const hashLogs = computed(() =>
 
       <div
         class="month"
-        v-for="month in Object.keys(hashLogs[year])"
+        v-for="month in Object.keys(hashLogs[year]).sort((a,b) => b-a)"
         :key="`${year} - ${month}`"
       >
         <div>
@@ -94,14 +94,14 @@ const hashLogs = computed(() =>
               </tr>
             </tbody>
           </table>
-
-          <PaginationNumeric
-            :links="progressLogs.links"
-            :handlePage="handleFilterLogs"
-            :perPage="LOGS_PER_PAGE"
-          />
         </div>
       </div>
+
+      <PaginationNumeric
+          :links="progressLogs.links"
+          :handlePage="handleFilterLogs"
+          :perPage="LOGS_PER_PAGE"
+      />
     </div>
   </Page>
 </template>
