@@ -59,7 +59,7 @@ const hashLogs = computed(() =>
 
       <div
         class="month"
-        v-for="month in Object.keys(hashLogs[year]).sort((a,b) => b-a)"
+        v-for="month in Object.keys(hashLogs[year]).sort((a: string, b: string) => +b - +a)"
         :key="`${year} - ${month}`"
       >
         <div>

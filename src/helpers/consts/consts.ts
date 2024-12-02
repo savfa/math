@@ -2,6 +2,7 @@ export const MathType = {
   ADDITION: `ADDITION`,
   SUBTRACTION: `SUBTRACTION`,
   MULTIPLICATION: `MULTIPLICATION`,
+  COMPARE: `COMPARE`,
 };
 
 export const months: string[] = [

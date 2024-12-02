@@ -25,6 +25,8 @@ export const getNewQuestion = (
     num: number || 1,
     a: Math.floor(Math.random() * (max - min + 1)) + min,
     b: Math.floor(Math.random() * (max - min + 1)) + min,
+    c: Math.floor(Math.random() * (max - min + 1)) + min,
+    d: Math.floor(Math.random() * (max - min + 1)) + min,
   };
 };
 
@@ -36,6 +38,8 @@ export const getMathTypeFormat = (mathType: string) => {
       return `Вычитание`;
     case MathType.MULTIPLICATION:
       return `Умножение`;
+    case MathType.COMPARE:
+      return `Неравенства`;
     default:
       return ``;
   }

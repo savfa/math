@@ -16,11 +16,13 @@ const isSelected = computed(() => (num: number) => {
 const prepareMaxNumRange = computed(() => {
   switch (mathType.value) {
     case MathType.ADDITION:
-      return 10;
+      return 50;
     case MathType.SUBTRACTION:
-      return 20;
+      return 100;
     case MathType.MULTIPLICATION:
       return 10;
+    case MathType.COMPARE:
+      return 50;
 
     default:
       return 10;

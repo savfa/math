@@ -42,6 +42,13 @@ const handleMathType = computed(() => (tabType: string) => {
     >
       {{ getMathTypeFormat(MathType.MULTIPLICATION) }}
     </AppButton>
+    <AppButton
+        isButtonTab
+        :isActive="getIsActive(MathType.COMPARE)"
+        :handleClick="() => handleMathType(MathType.COMPARE)"
+    >
+      {{ getMathTypeFormat(MathType.COMPARE) }}
+    </AppButton>
   </div>
 </template>
 
