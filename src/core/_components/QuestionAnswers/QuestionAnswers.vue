@@ -10,39 +10,84 @@ const props = defineProps<{
 }>();
 
 const selectedAnswer = ref<VueElement | null>(null);
+const compareOperator = ref<{ first: string; second: string; }>({ first: `+`, second: `+` });
 
 const getMathTypeConfig = (type: string) => {
   switch (type) {
     case MathType.ADDITION:
-      return { maxNum: 20, operator: `+` };
+      return { maxNum: 100, operator: `+` };
     case MathType.SUBTRACTION:
-      return { maxNum: 20, operator: `-` };
+      return { maxNum: 100, operator: `-` };
     case MathType.MULTIPLICATION:
       return { maxNum: 100, operator: `*` };
+    case MathType.COMPARE:
+      return { maxNum: 100, operator: `` };
     default:
-      return { maxNum: 20, operator: `+` };
+      return { maxNum: 100, operator: `+` };
   }
 };
 
 const maxNum = computed(() => getMathTypeConfig(props.mathType).maxNum);
 const operator = computed(() => getMathTypeConfig(props.mathType).operator);
 
-const calculate = (a: number, b: number, operator: string) => {
-  switch (operator) {
-    case "+":
-      return a + b;
-    case "-":
-      return a > b ? a - b : b - a;
-    case "*":
-      return a * b;
+const prepareQuestion = computed(() => {
+  switch (props.mathType) {
+    case MathType.ADDITION:
+    case MathType.MULTIPLICATION:
+      return `${props.question.a} ${operator.value} ${props.question.b} = ?`
+    case MathType.SUBTRACTION:
+      return props.question.a < props.question.b
+          ? `${props.question.b} ${operator.value} ${props.question.a} = ?`
+          : `${props.question.a} ${operator.value} ${props.question.b} = ?`;
+    case MathType.COMPARE:
+      // если знак минус и первое меньше - меняем местами, чтобы результат был положительный
+      const first = compareOperator.value.first === `-` && props.question.a < props.question.b
+          ? `${props.question.b} ${compareOperator.value.first} ${props.question.a}`
+          : `${props.question.a} ${compareOperator.value.first} ${props.question.b}`;
+      const second = compareOperator.value.second === `-` && props.question.c < props.question.d
+          ? `${props.question.d} ${compareOperator.value.second} ${props.question.c}`
+          : `${props.question.c} ${compareOperator.value.second} ${props.question.d}`;
+
+
+      return `${first} ... ${second}`;
     default:
-      return a + b;
+      return ``;
   }
-};
+})
+
+const calculate = computed(() => {
+  switch (props.mathType) {
+    case MathType.ADDITION:
+      return props.question.a + props.question.b;
+    case MathType.SUBTRACTION:
+      return props.question.a > props.question.b
+          ? props.question.a - props.question.b
+          : props.question.b - props.question.a;
+    case MathType.MULTIPLICATION:
+      return props.question.a * props.question.b;
+    case MathType.COMPARE:
+      // если знак минус и первое меньше - меняем местами, чтобы результат был положительный
+
+      const first = compareOperator.value.first === `+` ?
+          props.question.a + props.question.b
+          : props.question.a < props.question.b
+              ? props.question.b - props.question.a
+              :  props.question.a - props.question.b;
+      const second =  compareOperator.value.second === `+`
+          ? props.question.c + props.question.d
+          : props.question.c < props.question.d
+              ? props.question.d - props.question.c
+              : props.question.c - props.question.d;
+
+      return first > second ? `>` : first < second ? `<` : `=`;
+    default:
+      return 0;
+  }
+});
 
 const shuffledAnswers = computed(() => {
   const options = new Set([
-    calculate(props.question.a, props.question.b, operator.value),
+    calculate.value,
     Math.floor(Math.random() * maxNum.value + 1),
     Math.floor(Math.random() * maxNum.value + 1),
     Math.floor(Math.random() * maxNum.value + 1),
@@ -57,13 +102,16 @@ const shuffledAnswers = computed(() => {
     options.add(Math.floor(Math.random() * maxNum.value + 1));
   }
 
-  return [...options].sort(() => Math.random() - 0.5);
+  return props.mathType === MathType.COMPARE
+      ? [`>`, `<`, `=`]
+      :  [...options].sort(() => Math.random() - 0.5);
 });
 
 const checkAnswer = (answer: any, element: any) => {
   selectedAnswer.value = element;
-  const isCorrectAnswer =
-    answer === calculate(props.question.a, props.question.b, operator.value);
+  const isCorrectAnswer = answer === calculate.value;
+
+  compareOperator.value = { first: Math.floor(Math.random() * 2) === 0 ? `+` : `-`, second: Math.floor(Math.random() * 2) === 0 ? `+` : `-` };
 
   if (isCorrectAnswer) {
     selectedAnswer.value?.classList.add("question__answers-item--correct");
@@ -85,13 +133,7 @@ const checkAnswer = (answer: any, element: any) => {
 <template>
   <div class="question">
     <div class="question__text">
-      Вопрос:
-      {{
-        mathType === MathType.SUBTRACTION && question.a < question.b
-          ? `${question.b} ${operator} ${question.a}`
-          : `${question.a} ${operator} ${question.b}`
-      }}
-      = ?
+      Вопрос: {{ prepareQuestion }}
     </div>
 
     <div class="question__answers">

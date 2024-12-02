@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Page from "../../../_components/_ui-kit/Page/Page.vue";
-import { ref, watch, inject } from "vue";
+import {ref, watch, inject, computed} from "vue";
 import AppButton from "../../../_components/_ui-kit/AppButton/AppButton.vue";
 import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
@@ -22,13 +22,29 @@ const currentQuestion = ref<{ num: number; a: number; b: number } | null>(null);
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
 
+const prepareQuestionsTypeRange = computed(() => {
+  switch (mathType.value) {
+    case MathType.ADDITION:
+      return `1-50`;
+    case MathType.SUBTRACTION:
+      return `1-100`;
+    case MathType.MULTIPLICATION:
+      return `1-10`;
+    case MathType.COMPARE:
+      return `1-50`;
+
+    default:
+      return `1-10`;
+  }
+});
+
 const handleStartTesting = () => {
   isStartTesting.value = true;
   isFinishedTesting.value = false;
   timeString.value = ``;
   correctAnswersCount.value = 0;
   inCorrectAnswersCount.value = 0;
-  currentQuestion.value = getNewQuestion(`1-10`);
+  currentQuestion.value = getNewQuestion(prepareQuestionsTypeRange.value);
 };
 
 const handleCheckAnswer = (isCorrect: boolean) => {
@@ -40,7 +56,7 @@ const handleCheckAnswer = (isCorrect: boolean) => {
 
   setTimeout(() => {
     currentQuestion.value = getNewQuestion(
-      mathType.value === MathType.SUBTRACTION ? `1-20` : `1-10`,
+        prepareQuestionsTypeRange.value,
       (currentQuestion.value?.num || 1) + 1
     );
   }, 500);
