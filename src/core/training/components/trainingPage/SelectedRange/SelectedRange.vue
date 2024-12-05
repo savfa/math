@@ -1,16 +1,35 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { MathType } from "../../../../../helpers/consts/consts.ts";
+import {computed, ref} from "vue";
+import {MathType} from "../../../../../helpers/consts/consts.ts";
 
 const mathType = defineModel("mathType");
 const selectedRange = defineModel<any>("selectedRange");
 
 const startNum = ref<string>(``);
-const isSelected = computed(() => (num: number) => {
-  return (
-    selectedRange.value &&
-    selectedRange.value.split("-").map(Number).includes(num)
-  );
+
+const isSelected = computed(() => (num: number, measuresOptions: any) => {
+  const { stringRange, fromMeasures, toMeasures, operatorsMeasures } = measuresOptions || {};
+  const rangeName = (stringRange && `stringRange`) || (fromMeasures && `fromMeasures`) || (toMeasures && `toMeasures`) || (operatorsMeasures && `operatorsMeasures`);
+
+  switch (mathType.value) {
+    case MathType.ADDITION:
+    case MathType.SUBTRACTION:
+    case MathType.MULTIPLICATION:
+    case MathType.COMPARE:
+    case MathType.LENGTH_MEASURES:
+      return stringRange
+          ? selectedRange.value?.[rangeName].split("-").map(Number).includes(num)
+          : selectedRange.value?.[rangeName].includes(num)
+    default:
+      return false;
+  }
+});
+
+const isInRange = computed(() => (num: number) => {
+  if (!selectedRange?.value.stringRange) return false;
+
+  const [start, end] = selectedRange.value.stringRange?.split("-").map(Number);
+  return num >= start && num <= end;
 });
 
 const prepareMaxNumRange = computed(() => {
@@ -23,17 +42,12 @@ const prepareMaxNumRange = computed(() => {
       return 10;
     case MathType.COMPARE:
       return 50;
+    case MathType.LENGTH_MEASURES:
+      return { stringRange: 20 ,measures: [`м`, `дм`, `см`, `мм`], operators: [`+`, `-`] };
 
     default:
       return 10;
   }
-});
-
-const isInRange = computed(() => (num: number) => {
-  if (!selectedRange.value) return false;
-
-  const [start, end] = selectedRange.value.split("-").map(Number);
-  return num >= start && num <= end;
 });
 
 const handleMouseDown = computed(() => (event: any) => {
@@ -46,12 +60,9 @@ const handleMouseUp = computed(() => () => {
 const handleMouseOver = computed(() => (num: number) => {
   if (!startNum.value) return;
 
-  const prepareRange =
-    num > +startNum.value
+  selectedRange.value.stringRange = num > +startNum.value
       ? `${startNum.value}-${num}`
       : `${num}-${startNum.value}`;
-
-  selectedRange.value = prepareRange;
 });
 
 const handleTouchStart = computed(() => (event: any) => {
@@ -94,31 +105,89 @@ const handleTouchMove = computed(() => (event: any) => {
         ? `${startNum.value}-${num}`
         : `${num}-${startNum.value}`;
 
-    selectedRange.value = prepareRange;
+    selectedRange.value.stringRange = prepareRange;
   }
+});
+
+const handleClick = computed(() => (value: string, measuresOptions: any) => {
+  const { fromMeasures, toMeasures, operatorsMeasures } = measuresOptions || {};
+  const rangeName = (fromMeasures && `fromMeasures`) || (toMeasures && `toMeasures`) || (operatorsMeasures && `operatorsMeasures`);
+
+  selectedRange.value[rangeName] = selectedRange.value[rangeName].includes(value)
+      ? selectedRange.value[rangeName].filter((it) => it !== value)
+      : [...selectedRange.value[rangeName], value];
 });
 </script>
 
 <template>
   <div class="selected-range" @mouseup="handleMouseUp">
-    <div class="selected-range__text">Выберите диапазон чисел</div>
+    <div class="selected-range__text">Выберите диапазон</div>
     <div class="selected-range__list">
       <div
         class="selected-range__list-item"
         :class="{
-          selected: isSelected(num),
+          selected: isSelected(num, {stringRange: true}),
           'range-selected': isInRange(num),
         }"
-        v-for="num in prepareMaxNumRange"
+        v-for="num in (prepareMaxNumRange?.[`stringRange`] || prepareMaxNumRange)"
         :key="num"
         @mousedown="handleMouseDown"
-        @mouseup="handleMouseUp"
         @mouseover="handleMouseOver(num)"
+        @mouseup="handleMouseUp"
         @touchstart="handleTouchStart"
         @touchend="handleTouchEnd"
         @touchmove="handleTouchMove"
       >
         {{ num }}
+      </div>
+    </div>
+
+    <div v-if="mathType === MathType.LENGTH_MEASURES">
+      <div class="selected-range__text">Выберите параметры</div>
+      <div class="selected-range__list">
+        <div class="selected-range__text" style="width: 25px">из</div>
+        <div
+            class="selected-range__list-item"
+            :class="{
+          selected: isSelected(num, {fromMeasures: true}),
+          'range-selected': isSelected(num, {fromMeasures: true}),
+        }"
+            v-for="num in prepareMaxNumRange[`measures`]"
+            :key="num"
+            @click="handleClick(num, {fromMeasures: true})"
+        >
+          {{ num }}
+        </div>
+      </div>
+      <div class="selected-range__list">
+        <div class="selected-range__text" style="width: 25px">в</div>
+        <div
+            class="selected-range__list-item"
+            :class="{
+          selected: isSelected(num, {toMeasures: true}),
+          'range-selected': isSelected(num, {toMeasures: true}),
+        }"
+            v-for="num in prepareMaxNumRange[`measures`]"
+            :key="num"
+            @click="handleClick(num, {toMeasures: true})"
+        >
+          {{ num }}
+        </div>
+      </div>
+      <div class="selected-range__list">
+        <div class="selected-range__text" style="width: 25px">с</div>
+        <div
+            class="selected-range__list-item"
+            :class="{
+          selected: isSelected(operator, {operatorsMeasures: true}),
+          'range-selected': isSelected(operator, {operatorsMeasures: true}),
+        }"
+            v-for="operator in prepareMaxNumRange[`operators`]"
+            :key="operator"
+            @click="handleClick(operator, {operatorsMeasures: true})"
+        >
+          {{ operator }}
+        </div>
       </div>
     </div>
   </div>
@@ -136,6 +205,7 @@ const handleTouchMove = computed(() => (event: any) => {
   &__list {
     padding: 1rem 0;
     display: flex;
+    align-items: center;
     flex-wrap: wrap;
     gap: 10px;
 

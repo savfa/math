@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import {computed, reactive, ref, toRefs, watch, watchEffect} from "vue";
 import Page from "../../../_components/_ui-kit/Page/Page.vue";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
 import SelectedRange from "../../../training/components/trainingPage/SelectedRange/SelectedRange.vue";
@@ -9,15 +9,30 @@ import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
 import { MathType } from "../../../../helpers/consts/consts.ts";
 
 const mathType = ref(MathType.ADDITION);
-const selectedRange = ref<any>(``);
+const selectedRange = ref<any>({stringRange: ``, fromMeasures: [], toMeasures: [], operatorsMeasures: []});
+
 const currentQuestion = ref({});
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
 
+const isStartQuiz = computed(() => {
+  switch (mathType.value) {
+    case MathType.ADDITION:
+    case MathType.SUBTRACTION:
+    case MathType.MULTIPLICATION:
+    case MathType.COMPARE:
+      return !!selectedRange.value.stringRange;
+    case MathType.LENGTH_MEASURES:
+      return !!selectedRange.value.fromMeasures.length;
+    default:
+      return false;
+  }
+})
+
 const startQuiz = () => {
   correctAnswersCount.value = 0;
   inCorrectAnswersCount.value = 0;
-  currentQuestion.value = getNewQuestion(selectedRange.value);
+  currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: selectedRange.value });
 };
 
 const handleCheckAnswer = (isCorrect: boolean) => {
@@ -28,11 +43,11 @@ const handleCheckAnswer = (isCorrect: boolean) => {
   }
 
   setTimeout(() => {
-    currentQuestion.value = getNewQuestion(selectedRange.value);
+    currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: selectedRange.value });
   }, 500);
 };
 
-watch(selectedRange, () => {
+watchEffect(() => {
   startQuiz();
 });
 </script>
@@ -49,7 +64,7 @@ watch(selectedRange, () => {
       v-model:selectedRange="selectedRange"
     />
 
-    <div v-if="selectedRange">
+    <div v-if="isStartQuiz">
       <QuestionAnswers
         :mathType="mathType"
         :handleCheckAnswer="handleCheckAnswer"
