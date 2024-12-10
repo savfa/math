@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {  ref, VueElement } from "vue";
+import {MathType} from "../../../helpers/consts/consts.ts";
 
 const props = defineProps<{
   mathType: string;
@@ -37,7 +38,7 @@ const checkAnswer = (answer: any, element: any) => {
      {{ question.questionText }}
     </div>
 
-    <div class="question__answers">
+    <div :class="{question__answers: true, measures: props.mathType === MathType.LENGTH_MEASURES}">
       <div
         class="question__answers-item"
         v-for="(answer, index) in question.shuffledAnswers"
@@ -66,6 +67,11 @@ const checkAnswer = (answer: any, element: any) => {
     grid-template: repeat(3, 50px) / repeat(3, 50px);
     gap: 10px;
     perspective: 800px;
+
+    &.measures {
+      grid-template-columns: repeat(3, 30%);
+      grid-auto-rows: 50px;
+    }
 
     &-item {
       display: flex;

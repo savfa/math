@@ -9,7 +9,7 @@ import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
 import { MathType } from "../../../../helpers/consts/consts.ts";
 
 const mathType = ref(MathType.ADDITION);
-const selectedRange = ref<any>({stringRange: ``, fromMeasures: [], toMeasures: [], operatorsMeasures: []});
+const selectedRange = ref<any>({stringRange: ``, fromMeasures: [], toMeasures: [], operators: []});
 
 const currentQuestion = ref({});
 const correctAnswersCount = ref(0);

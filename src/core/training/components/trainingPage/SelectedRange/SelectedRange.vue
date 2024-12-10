@@ -2,14 +2,14 @@
 import {computed, ref} from "vue";
 import {MathType} from "../../../../../helpers/consts/consts.ts";
 
-const mathType = defineModel("mathType");
+const mathType = defineModel<any>("mathType");
 const selectedRange = defineModel<any>("selectedRange");
 
 const startNum = ref<string>(``);
 
 const isSelected = computed(() => (num: number, measuresOptions: any) => {
-  const { stringRange, fromMeasures, toMeasures, operatorsMeasures } = measuresOptions || {};
-  const rangeName = (stringRange && `stringRange`) || (fromMeasures && `fromMeasures`) || (toMeasures && `toMeasures`) || (operatorsMeasures && `operatorsMeasures`);
+  const { stringRange, fromMeasures, toMeasures, operators } = measuresOptions || {};
+  const rangeName = (stringRange && `stringRange`) || (fromMeasures && `fromMeasures`) || (toMeasures && `toMeasures`) || (operators && `operators`);
 
   switch (mathType.value) {
     case MathType.ADDITION:
@@ -41,9 +41,9 @@ const prepareMaxNumRange = computed(() => {
     case MathType.MULTIPLICATION:
       return 10;
     case MathType.COMPARE:
-      return 50;
+      return { stringRange: 50, measures: [], operators: [`+`, `-`] }
     case MathType.LENGTH_MEASURES:
-      return { stringRange: 20 ,measures: [`м`, `дм`, `см`, `мм`], operators: [`+`, `-`] };
+      return { stringRange: 30, measures: [`м`, `дм`, `см`, `мм`], operators: [`+`, `-`] };
 
     default:
       return 10;
@@ -110,8 +110,8 @@ const handleTouchMove = computed(() => (event: any) => {
 });
 
 const handleClick = computed(() => (value: string, measuresOptions: any) => {
-  const { fromMeasures, toMeasures, operatorsMeasures } = measuresOptions || {};
-  const rangeName = (fromMeasures && `fromMeasures`) || (toMeasures && `toMeasures`) || (operatorsMeasures && `operatorsMeasures`);
+  const { fromMeasures, toMeasures, operators } = measuresOptions || {};
+  const rangeName = (fromMeasures && `fromMeasures`) || (toMeasures && `toMeasures`) || (operators && `operators`);
 
   selectedRange.value[rangeName] = selectedRange.value[rangeName].includes(value)
       ? selectedRange.value[rangeName].filter((it) => it !== value)
@@ -142,16 +142,17 @@ const handleClick = computed(() => (value: string, measuresOptions: any) => {
       </div>
     </div>
 
-    <div v-if="mathType === MathType.LENGTH_MEASURES">
+    <div v-if="[MathType.COMPARE, MathType.LENGTH_MEASURES].includes(mathType)">
       <div class="selected-range__text">Выберите параметры</div>
-      <div class="selected-range__list">
-        <div class="selected-range__text" style="width: 25px">из</div>
+
+      <div class="selected-range__list" v-if="[MathType.LENGTH_MEASURES].includes(mathType)">
+        <div class="selected-range__text" style="width: 25px">c</div>
         <div
             class="selected-range__list-item"
             :class="{
-          selected: isSelected(num, {fromMeasures: true}),
-          'range-selected': isSelected(num, {fromMeasures: true}),
-        }"
+        selected: isSelected(num, {fromMeasures: true}),
+        'range-selected': isSelected(num, {fromMeasures: true}),
+      }"
             v-for="num in prepareMaxNumRange[`measures`]"
             :key="num"
             @click="handleClick(num, {fromMeasures: true})"
@@ -159,32 +160,18 @@ const handleClick = computed(() => (value: string, measuresOptions: any) => {
           {{ num }}
         </div>
       </div>
-      <div class="selected-range__list">
-        <div class="selected-range__text" style="width: 25px">в</div>
-        <div
-            class="selected-range__list-item"
-            :class="{
-          selected: isSelected(num, {toMeasures: true}),
-          'range-selected': isSelected(num, {toMeasures: true}),
-        }"
-            v-for="num in prepareMaxNumRange[`measures`]"
-            :key="num"
-            @click="handleClick(num, {toMeasures: true})"
-        >
-          {{ num }}
-        </div>
-      </div>
-      <div class="selected-range__list">
+
+      <div class="selected-range__list" v-if="[MathType.COMPARE, MathType.LENGTH_MEASURES].includes(mathType)">
         <div class="selected-range__text" style="width: 25px">с</div>
         <div
             class="selected-range__list-item"
             :class="{
-          selected: isSelected(operator, {operatorsMeasures: true}),
-          'range-selected': isSelected(operator, {operatorsMeasures: true}),
+          selected: isSelected(operator, {operators: true}),
+          'range-selected': isSelected(operator, {operators: true}),
         }"
             v-for="operator in prepareMaxNumRange[`operators`]"
             :key="operator"
-            @click="handleClick(operator, {operatorsMeasures: true})"
+            @click="handleClick(operator, {operators: true})"
         >
           {{ operator }}
         </div>
