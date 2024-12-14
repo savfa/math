@@ -21,6 +21,19 @@ const getRandMinMaxNum = (min: number, max: number) =>
 
 const getRandNum = (num: number) => Math.floor(Math.random() * num + 1);
 
+const getRandomElement = (arr: any[]) => {
+  return arr[Math.floor(Math.random() * arr.length)];
+};
+
+// Функция для перевода мер длины
+const convertMeasure = (value: number, from: string, to: string) => {
+  const measures = ["м", "дм", "см", "мм"];
+  const fromIndex = measures.indexOf(from);
+  const toIndex = measures.indexOf(to);
+  const factor = Math.pow(10, toIndex - fromIndex);
+  return value * factor;
+};
+
 export const getNewQuestion = (
   options: any
   /*mathType: string,
@@ -40,7 +53,6 @@ export const getNewQuestion = (
   let questionText = `Вопрос: `;
   let operator = ``;
   let operator2 = ``;
-  let operator3 = ``;
   const [min, max] = stringRange.split("-").map(Number) || ``;
   const a: number = getRandMinMaxNum(min, max);
   const b: number = getRandMinMaxNum(min, max);
@@ -48,6 +60,8 @@ export const getNewQuestion = (
   let answer: any = ``;
   const maxAnswer = 100;
   const sortOrder = ["м", "дм", "см", "мм"];
+  const fromMeasure = getRandomElement(fromMeasures);
+  let toMeasure = ``;
   let shuffledAnswers = [];
 
   switch (mathType) {
@@ -67,18 +81,8 @@ export const getNewQuestion = (
       answer = a * b;
       break;
     case MathType.COMPARE:
-      operator =
-        operators.length === 2
-          ? Math.floor(Math.random() * 2) === 0
-            ? `+`
-            : `-`
-          : operators[0];
-      operator2 =
-        operators.length === 2
-          ? Math.floor(Math.random() * 2) === 0
-            ? `+`
-            : `-`
-          : operators[0];
+      operator = getRandomElement(operators);
+      operator2 = getRandomElement(operators);
       c = getRandMinMaxNum(min, max);
       d = getRandMinMaxNum(min, max);
       // eslint-disable-next-line no-case-declarations
@@ -107,84 +111,81 @@ export const getNewQuestion = (
             : `=`;
       break;
     case MathType.LENGTH_MEASURES:
-      c = getRandMinMaxNum(min, max);
-      d = getRandMinMaxNum(min, max);
-      operator =
-        operators.length === 2
-          ? Math.floor(Math.random() * 2) === 0
-            ? `+`
-            : `-`
-          : operators[0];
-      operator2 =
-        operators.length === 2
-          ? Math.floor(Math.random() * 2) === 0
-            ? `+`
-            : `-`
-          : operators[0];
-      operator3 =
-        operators.length === 2
-          ? Math.floor(Math.random() * 2) === 0
-            ? `+`
-            : `-`
-          : operators[0];
+      operator = getRandomElement(operators);
 
       fromMeasures.sort(
         (a: string, b: string) => sortOrder.indexOf(a) - sortOrder.indexOf(b)
       );
 
-      // todo давать рандом из приходящих параметров selectedRange
-      // обработать случаи когда приходит массив fromMeasures, toMeasures,
-      // если operators то учитывать правило
+      if (operator) {
+        // Генерация второго числа и меры длины для оператора
+        const secondMeasure = getRandomElement(fromMeasures);
 
-      // eslint-disable-next-line no-case-declarations
-      const from = fromMeasures
-        .map((measure: string, index: number) => {
-          const prepareNum =
-            (!index && a) ||
-            (index === 1 && b) ||
-            (index === 2 && c) ||
-            (index === 3 && d);
-          const prepareOperator =
-            (operator && !index && fromMeasures.length > 1 && ` ${operator}`) ||
-            (operator2 &&
-              index === 1 &&
-              fromMeasures.length > 2 &&
-              ` ${operator2}`) ||
-            (operator3 &&
-              index === 2 &&
-              fromMeasures.length > 3 &&
-              ` ${operator3}`) ||
-            ``;
+        // Перевод мер длины и вычисление ответа
+        const convertedValue = convertMeasure(a, fromMeasure, "мм");
+        const convertedSecondValue = convertMeasure(b, secondMeasure, "мм");
+        let result;
 
-          return `${prepareNum} ${measure}${prepareOperator}`;
-        })
-        .join(` `);
+        if (operator === "+") {
+          result = convertedValue + convertedSecondValue;
+        } else if (operator === "-") {
+          result = convertedValue - convertedSecondValue;
+        }
 
-      // eslint-disable-next-line no-case-declarations
-      const to = toMeasures
-        .map((measure: string) => {
-          return `... ${measure}`;
-        })
-        .join(` `);
+        // Определение меры длины для ответа
+        if (fromMeasure === secondMeasure) {
+          toMeasure = fromMeasure;
+        } else {
+          toMeasure = result % 10 === 0 ? "см" : "мм";
+        }
 
-      // вопрос в зависимости от не пустого массива operators
-      questionText += `${from} = ${to}`;
+        // Формирование вопроса с оператором
+        questionText += `${a} ${fromMeasure} ${operator} ${b} ${secondMeasure} = ... ${toMeasure}`;
+
+        answer = convertMeasure(result, "мм", toMeasure) + toMeasure;
+      } else {
+        // Определение меры длины для ответа
+        if (fromMeasure === "м") {
+          toMeasure = "дм";
+        } else if (fromMeasure === "дм") {
+          toMeasure = "см";
+        } else if (fromMeasure === "см") {
+          toMeasure = "мм";
+        } else if (fromMeasure === "мм") {
+          toMeasure = "мм";
+        }
+
+        // Формирование вопроса без оператора
+        questionText += `${a} ${fromMeasure} = ... ${toMeasure}`;
+
+        // Перевод мер длины и вычисление ответа
+        answer = convertMeasure(a, fromMeasure, toMeasure) + toMeasure;
+      }
 
       break;
     default:
       break;
   }
 
+  // возможные варианты ответов
   if (
-    [MathType.ADDITION, MathType.SUBTRACTION, MathType.MULTIPLICATION].includes(
-      mathType
-    )
+    [
+      MathType.ADDITION,
+      MathType.SUBTRACTION,
+      MathType.MULTIPLICATION,
+      MathType.LENGTH_MEASURES,
+    ].includes(mathType)
   ) {
     const prepareShuffle: Set<any> = new Set([]);
 
     while (prepareShuffle.size < 9) {
       prepareShuffle.add(answer);
-      prepareShuffle.add(getRandNum(maxAnswer));
+      MathType.LENGTH_MEASURES === mathType
+        ? prepareShuffle.add(
+            convertMeasure(getRandNum(maxAnswer), fromMeasure, toMeasure) +
+              toMeasure
+          )
+        : prepareShuffle.add(getRandNum(maxAnswer));
     }
 
     const sortShuffledAnswers = [...prepareShuffle];

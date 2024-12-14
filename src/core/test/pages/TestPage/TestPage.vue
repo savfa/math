@@ -23,7 +23,7 @@ const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
 
 const prepareQuestionsTypeRange = computed(() => {
-  const selectedRange = { stringRange: `1-50`, fromMeasures: [], toMeasures: [], operators: [] };
+  const selectedRange = { stringRange: `1-50`, fromMeasures: [], operators: [] };
   switch (mathType.value) {
     case MathType.ADDITION:
       selectedRange.stringRange = `1-50`;
@@ -41,7 +41,6 @@ const prepareQuestionsTypeRange = computed(() => {
     case MathType.LENGTH_MEASURES:
       selectedRange.stringRange = `1-30`;
       selectedRange.fromMeasures = [`м`, `дм`, `см`, `мм`];
-      selectedRange.toMeasures = [`м`, `дм`, `см`, `мм`];
       selectedRange.operators = [`+`, `-`];
       break;
     default:
@@ -202,6 +201,8 @@ watchEffect( () => {
   }
 
   &__progress {
+    width: 100%;
+
     &-info {
       display: flex;
       gap: 1rem;

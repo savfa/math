@@ -17,7 +17,6 @@ const handleMathType = computed(() => (tabType: string) => {
     selectedRange.value = {
       stringRange: ``,
       fromMeasures: [],
-      toMeasures: [],
       operators: []
     };
   }
