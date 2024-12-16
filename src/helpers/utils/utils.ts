@@ -21,33 +21,23 @@ const getRandMinMaxNum = (min: number, max: number) =>
 
 const getRandNum = (num: number) => Math.floor(Math.random() * num + 1);
 
-const getRandomElement = (arr: any[]) => {
+export const getRandomElement = (arr: any[]) => {
   return arr[Math.floor(Math.random() * arr.length)];
 };
 
 // Функция для перевода мер длины
-const convertMeasure = (value: number, from: string, to: string) => {
+const convertMeasure = (values: number[], from: string[], to: string[]) => {
   const measures = ["м", "дм", "см", "мм"];
   const fromIndex = measures.indexOf(from);
   const toIndex = measures.indexOf(to);
   const factor = Math.pow(10, toIndex - fromIndex);
-  return value * factor;
+  //return value * factor; // todo ответ с мерой длины
 };
 
-export const getNewQuestion = (
-  options: any
-  /*mathType: string,
-  selectedRange: any,
-  number?: number*/
-) => {
+export const getNewQuestion = (options: any) => {
   const {
     mathType,
-    selectedRange: {
-      stringRange = ``,
-      fromMeasures = [],
-      toMeasures = [],
-      operators = [],
-    },
+    selectedRange: { stringRange = ``, operators = [] },
   } = options;
 
   let questionText = `Вопрос: `;
@@ -60,8 +50,8 @@ export const getNewQuestion = (
   let answer: any = ``;
   const maxAnswer = 100;
   const sortOrder = ["м", "дм", "см", "мм"];
-  const fromMeasure = getRandomElement(fromMeasures);
-  let toMeasure = ``;
+  let fromMeasures: string[] = [];
+  let toMeasures: string[] = [];
   let shuffledAnswers = [];
 
   switch (mathType) {
@@ -113,18 +103,14 @@ export const getNewQuestion = (
     case MathType.LENGTH_MEASURES:
       operator = getRandomElement(operators);
 
-      fromMeasures.sort(
-        (a: string, b: string) => sortOrder.indexOf(a) - sortOrder.indexOf(b)
-      );
-
       if (operator) {
         // Генерация второго числа и меры длины для оператора
-        const secondMeasure = getRandomElement(fromMeasures);
+        /*const secondMeasure = getRandomElement(fromMeasures);
 
         // Перевод мер длины и вычисление ответа
         const convertedValue = convertMeasure(a, fromMeasure, "мм");
         const convertedSecondValue = convertMeasure(b, secondMeasure, "мм");
-        let result;
+        let result = 0;
 
         if (operator === "+") {
           result = convertedValue + convertedSecondValue;
@@ -137,14 +123,23 @@ export const getNewQuestion = (
           toMeasure = fromMeasure;
         } else {
           toMeasure = result % 10 === 0 ? "см" : "мм";
-        }
+        }*/
 
-        // Формирование вопроса с оператором
-        questionText += `${a} ${fromMeasure} ${operator} ${b} ${secondMeasure} = ... ${toMeasure}`;
+        fromMeasures = [
+          getRandomElement(sortOrder),
+          getRandomElement(sortOrder),
+        ];
 
-        answer = convertMeasure(result, "мм", toMeasure) + toMeasure;
+        fromMeasures.sort(
+          (a: string, b: string) => sortOrder.indexOf(a) - sortOrder.indexOf(b)
+        );
+
+        toMeasures = [fromMeasures[1]]; //одна мера, если равны fromMeasures иначе в меньшую (в конце после сортировки)
+
+        // Формирование вопроса с оператором, всегда два в левой части
+        questionText += `${a} ${fromMeasures[0]} ${operator} ${b} ${fromMeasures[1]} = ... ${toMeasures[0]}`;
       } else {
-        // Определение меры длины для ответа
+        /*// Определение меры длины для ответа
         if (fromMeasure === "м") {
           toMeasure = "дм";
         } else if (fromMeasure === "дм") {
@@ -153,14 +148,29 @@ export const getNewQuestion = (
           toMeasure = "мм";
         } else if (fromMeasure === "мм") {
           toMeasure = "мм";
-        }
-
-        // Формирование вопроса без оператора
+        }*/
+        /* // Формирование вопроса без оператора
         questionText += `${a} ${fromMeasure} = ... ${toMeasure}`;
 
         // Перевод мер длины и вычисление ответа
-        answer = convertMeasure(a, fromMeasure, toMeasure) + toMeasure;
+        answer = convertMeasure(a, fromMeasure, toMeasure) + toMeasure;*/
+
+        fromMeasures = [];
+        toMeasures = [];
+
+        fromMeasures.sort(
+          (a: string, b: string) => sortOrder.indexOf(a) - sortOrder.indexOf(b)
+        );
+
+        toMeasures.sort(
+          (a: string, b: string) => sortOrder.indexOf(a) - sortOrder.indexOf(b)
+        );
+
+        // Формирование вопроса без оператора, рандомно левая и правая в зависимости от левой
+        questionText += `${fromMeasures.map((it: string, ind: number) => (ind ? `${b} ${it}` : `${a} ${it}`)).join(` `)} = ... ${toMeasures.map((it: string) => `... ${it}`).join(` `)}`;
       }
+
+      answer = convertMeasure([a, b], fromMeasures, toMeasures);
 
       break;
     default:
@@ -182,8 +192,11 @@ export const getNewQuestion = (
       prepareShuffle.add(answer);
       MathType.LENGTH_MEASURES === mathType
         ? prepareShuffle.add(
-            convertMeasure(getRandNum(maxAnswer), fromMeasure, toMeasure) +
-              toMeasure
+            convertMeasure(
+              [getRandNum(maxAnswer), getRandNum(maxAnswer)],
+              fromMeasures,
+              toMeasures
+            )
           )
         : prepareShuffle.add(getRandNum(maxAnswer));
     }

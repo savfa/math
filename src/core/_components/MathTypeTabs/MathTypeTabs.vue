@@ -16,7 +16,6 @@ const handleMathType = computed(() => (tabType: string) => {
   if (mathType.value !== tabType) {
     selectedRange.value = {
       stringRange: ``,
-      fromMeasures: [],
       operators: []
     };
   }

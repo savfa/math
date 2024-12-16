@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Page from "../../../_components/_ui-kit/Page/Page.vue";
-import {ref, watch, inject, computed, watchEffect} from "vue";
+import {ref, inject, watchEffect} from "vue";
 import AppButton from "../../../_components/_ui-kit/AppButton/AppButton.vue";
-import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
+import {getNewQuestion, getRandomElement} from "../../../../helpers/utils/utils.ts";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
 import AnswersResult from "../../../_components/AnswersResult/AnswersResult.vue";
 import MathTypeTabs from "../../../_components/MathTypeTabs/MathTypeTabs.vue";
@@ -22,9 +22,11 @@ const currentQuestion = ref({});
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
 
-const prepareQuestionsTypeRange = computed(() => {
-  const selectedRange = { stringRange: `1-50`, fromMeasures: [], operators: [] };
-  switch (mathType.value) {
+
+// todo подумать может прокидывать рандом без computed а не кешированную функцию
+const getPrepareSelectedRange = (mathType: string) => {
+  const selectedRange = { stringRange: `1-50`, operators: [] };
+  switch (mathType) {
     case MathType.ADDITION:
       selectedRange.stringRange = `1-50`;
       break;
@@ -36,19 +38,18 @@ const prepareQuestionsTypeRange = computed(() => {
       break;
     case MathType.COMPARE:
       selectedRange.stringRange = `1-50`;
-      selectedRange.operators = [`+`, `-`];
+      selectedRange.operators = getRandomElement([``, `+`, `-`]) ? [`+`, `-`] : [];
       break;
     case MathType.LENGTH_MEASURES:
       selectedRange.stringRange = `1-30`;
-      selectedRange.fromMeasures = [`м`, `дм`, `см`, `мм`];
-      selectedRange.operators = [`+`, `-`];
+      selectedRange.operators = getRandomElement([``, `+`, `-`]) ? [`+`, `-`] : [];
       break;
     default:
       break;
   }
 
   return selectedRange;
-});
+};
 
 const handleStartTesting = () => {
   isStartTesting.value = true;
@@ -56,7 +57,7 @@ const handleStartTesting = () => {
   timeString.value = ``;
   correctAnswersCount.value = 0;
   inCorrectAnswersCount.value = 0;
-  currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: prepareQuestionsTypeRange.value });
+  currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: getPrepareSelectedRange(mathType.value) });
 };
 
 const handleCheckAnswer = (isCorrect: boolean) => {
@@ -67,7 +68,7 @@ const handleCheckAnswer = (isCorrect: boolean) => {
   }
 
   setTimeout(() => {
-    currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: prepareQuestionsTypeRange.value });
+    currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: getPrepareSelectedRange(mathType.value) });
   }, 500);
 };
 

@@ -9,7 +9,7 @@ import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
 import { MathType } from "../../../../helpers/consts/consts.ts";
 
 const mathType = ref(MathType.ADDITION);
-const selectedRange = ref<any>({stringRange: ``, fromMeasures: [], operators: []});
+const selectedRange = ref<any>({stringRange: ``, operators: []});
 
 const currentQuestion = ref({});
 const correctAnswersCount = ref(0);
@@ -21,9 +21,8 @@ const isStartQuiz = computed(() => {
     case MathType.SUBTRACTION:
     case MathType.MULTIPLICATION:
     case MathType.COMPARE:
-      return !!selectedRange.value.stringRange;
     case MathType.LENGTH_MEASURES:
-      return !!selectedRange.value.fromMeasures.length;
+      return !!selectedRange.value.stringRange;
     default:
       return false;
   }

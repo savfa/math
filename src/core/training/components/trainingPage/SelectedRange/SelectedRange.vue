@@ -7,9 +7,9 @@ const selectedRange = defineModel<any>("selectedRange");
 
 const startNum = ref<string>(``);
 
-const isSelected = computed(() => (num: number, measuresOptions: any) => {
-  const { stringRange, fromMeasures, toMeasures, operators } = measuresOptions || {};
-  const rangeName = (stringRange && `stringRange`) || (fromMeasures && `fromMeasures`) || (toMeasures && `toMeasures`) || (operators && `operators`);
+const isSelected = computed(() => (param: number | string, options: any) => {
+  const { stringRange, operators } = options || {};
+  const rangeName = (stringRange && `stringRange`) ||  (operators && `operators`);
 
   switch (mathType.value) {
     case MathType.ADDITION:
@@ -18,8 +18,8 @@ const isSelected = computed(() => (num: number, measuresOptions: any) => {
     case MathType.COMPARE:
     case MathType.LENGTH_MEASURES:
       return stringRange
-          ? selectedRange.value?.[rangeName].split("-").map(Number).includes(num)
-          : selectedRange.value?.[rangeName].includes(num)
+          ? selectedRange.value?.[rangeName].split("-").map(Number).includes(param)
+          : selectedRange.value?.[rangeName].includes(param)
     default:
       return false;
   }
@@ -35,18 +35,18 @@ const isInRange = computed(() => (num: number) => {
 const prepareMaxNumRange = computed(() => {
   switch (mathType.value) {
     case MathType.ADDITION:
-      return 50;
+      return { stringRange: 50, operators: []  }
     case MathType.SUBTRACTION:
-      return 100;
+      return { stringRange: 100, operators: [] }
     case MathType.MULTIPLICATION:
-      return 10;
+      return { stringRange: 10, operators: [] }
     case MathType.COMPARE:
-      return { stringRange: 50, measures: [], operators: [`+`, `-`] }
+      return { stringRange: 50, operators: [`+`, `-`] }
     case MathType.LENGTH_MEASURES:
-      return { stringRange: 30, measures: [`м`, `дм`, `см`, `мм`], operators: [`+`, `-`] };
+      return { stringRange: 30, operators: [`+`, `-`] };
 
     default:
-      return 10;
+      return { stringRange: 10, operators: [] };
   }
 });
 
@@ -109,9 +109,9 @@ const handleTouchMove = computed(() => (event: any) => {
   }
 });
 
-const handleClick = computed(() => (value: string, measuresOptions: any) => {
-  const { fromMeasures, toMeasures, operators } = measuresOptions || {};
-  const rangeName = (fromMeasures && `fromMeasures`) || (toMeasures && `toMeasures`) || (operators && `operators`);
+const handleClick = computed(() => (value: string, options: any) => {
+  const {  operators } = options || {};
+  const rangeName =  (operators && `operators`) || ``;
 
   selectedRange.value[rangeName] = selectedRange.value[rangeName].includes(value)
       ? selectedRange.value[rangeName].filter((it) => it !== value)
@@ -129,7 +129,7 @@ const handleClick = computed(() => (value: string, measuresOptions: any) => {
           selected: isSelected(num, {stringRange: true}),
           'range-selected': isInRange(num),
         }"
-        v-for="num in (prepareMaxNumRange?.[`stringRange`] || prepareMaxNumRange)"
+        v-for="num in prepareMaxNumRange.stringRange"
         :key="num"
         @mousedown="handleMouseDown"
         @mouseover="handleMouseOver(num)"
@@ -145,22 +145,6 @@ const handleClick = computed(() => (value: string, measuresOptions: any) => {
     <div v-if="[MathType.COMPARE, MathType.LENGTH_MEASURES].includes(mathType)">
       <div class="selected-range__text">Выберите параметры</div>
 
-      <div class="selected-range__list" v-if="[MathType.LENGTH_MEASURES].includes(mathType)">
-        <div class="selected-range__text" style="width: 25px">c</div>
-        <div
-            class="selected-range__list-item"
-            :class="{
-        selected: isSelected(num, {fromMeasures: true}),
-        'range-selected': isSelected(num, {fromMeasures: true}),
-      }"
-            v-for="num in prepareMaxNumRange[`measures`]"
-            :key="num"
-            @click="handleClick(num, {fromMeasures: true})"
-        >
-          {{ num }}
-        </div>
-      </div>
-
       <div class="selected-range__list" v-if="[MathType.COMPARE, MathType.LENGTH_MEASURES].includes(mathType)">
         <div class="selected-range__text" style="width: 25px">с</div>
         <div
@@ -169,7 +153,7 @@ const handleClick = computed(() => (value: string, measuresOptions: any) => {
           selected: isSelected(operator, {operators: true}),
           'range-selected': isSelected(operator, {operators: true}),
         }"
-            v-for="operator in prepareMaxNumRange[`operators`]"
+            v-for="operator in prepareMaxNumRange.operators"
             :key="operator"
             @click="handleClick(operator, {operators: true})"
         >
