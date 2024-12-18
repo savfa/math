@@ -26,12 +26,66 @@ export const getRandomElement = (arr: any[]) => {
 };
 
 // Функция для перевода мер длины
-const convertMeasure = (values: number[], from: string[], to: string[]) => {
+const convertMeasure = (
+  values: number[],
+  from: string[],
+  to: string[],
+  operator: string | undefined
+) => {
   const measures = ["м", "дм", "см", "мм"];
-  const fromIndex = measures.indexOf(from);
+  /*const fromIndex = measures.indexOf(from);
   const toIndex = measures.indexOf(to);
   const factor = Math.pow(10, toIndex - fromIndex);
-  //return value * factor; // todo ответ с мерой длины
+  //return value * factor; // todo ответ с мерой длины*/
+
+  if (to.length === 1) {
+    return from.reduce(
+      (res: string, next: string, i: number, arr: string[]) => {
+        const fromIndex = measures.indexOf(next);
+        const toIndex = measures.indexOf(to[0]);
+        const degree = toIndex - fromIndex;
+        const isMultiply = degree >= 0;
+        const factor = Math.pow(10, Math.abs(degree));
+
+        if (i === arr.length - 1) {
+          return (
+            +res +
+            (operator === `-` ? -1 : 1) *
+              (isMultiply ? values[i] * factor : values[i] / factor) +
+            to[0]
+          );
+        }
+
+        return (+res + values[i] * factor).toString();
+      },
+      ``
+    );
+  } else if (to.length > 1) {
+    const { resValue } = to.reduce(
+      (res: any, next: string, i: number, arr: string[]) => {
+        const fromIndex = measures.indexOf(next);
+        const toIndex = measures.indexOf(to[0]);
+        const degree = toIndex - fromIndex;
+        const isMultiply = degree >= 0;
+        const factor = Math.pow(10, Math.abs(degree));
+
+        const value = Math.floor(
+          isMultiply ? res.restValue * factor : res.restValue / factor
+        );
+
+        res[next] = value;
+        res.restValue = res.restValue % factor;
+        res.resValue += `${value} ${next}`;
+        i !== arr.length - 1 ? (res.resValue += ` `) : null;
+        return res;
+      },
+      { restValue: values[0], resValue: `` }
+    );
+
+    return resValue;
+  } else {
+    return ``;
+  }
 };
 
 export const getNewQuestion = (options: any) => {
@@ -104,27 +158,6 @@ export const getNewQuestion = (options: any) => {
       operator = getRandomElement(operators);
 
       if (operator) {
-        // Генерация второго числа и меры длины для оператора
-        /*const secondMeasure = getRandomElement(fromMeasures);
-
-        // Перевод мер длины и вычисление ответа
-        const convertedValue = convertMeasure(a, fromMeasure, "мм");
-        const convertedSecondValue = convertMeasure(b, secondMeasure, "мм");
-        let result = 0;
-
-        if (operator === "+") {
-          result = convertedValue + convertedSecondValue;
-        } else if (operator === "-") {
-          result = convertedValue - convertedSecondValue;
-        }
-
-        // Определение меры длины для ответа
-        if (fromMeasure === secondMeasure) {
-          toMeasure = fromMeasure;
-        } else {
-          toMeasure = result % 10 === 0 ? "см" : "мм";
-        }*/
-
         fromMeasures = [
           getRandomElement(sortOrder),
           getRandomElement(sortOrder),
@@ -139,24 +172,43 @@ export const getNewQuestion = (options: any) => {
         // Формирование вопроса с оператором, всегда два в левой части
         questionText += `${a} ${fromMeasures[0]} ${operator} ${b} ${fromMeasures[1]} = ... ${toMeasures[0]}`;
       } else {
-        /*// Определение меры длины для ответа
-        if (fromMeasure === "м") {
-          toMeasure = "дм";
-        } else if (fromMeasure === "дм") {
-          toMeasure = "см";
-        } else if (fromMeasure === "см") {
-          toMeasure = "мм";
-        } else if (fromMeasure === "мм") {
-          toMeasure = "мм";
-        }*/
-        /* // Формирование вопроса без оператора
-        questionText += `${a} ${fromMeasure} = ... ${toMeasure}`;
+        fromMeasures = [
+          getRandomElement(sortOrder),
+          getRandomElement(sortOrder),
+        ].slice(0, getRandMinMaxNum(1, 2));
 
-        // Перевод мер длины и вычисление ответа
-        answer = convertMeasure(a, fromMeasure, toMeasure) + toMeasure;*/
+        if (fromMeasures.length === 1) {
+          let prepareMeasures = sortOrder.filter(
+            (it) => it !== fromMeasures[0]
+          );
 
-        fromMeasures = [];
-        toMeasures = [];
+          switch (fromMeasures[0]) {
+            case "м":
+              prepareMeasures.splice(getRandMinMaxNum(0, 2), 1);
+              toMeasures = prepareMeasures; // 2
+              break;
+            case "дм":
+              prepareMeasures =
+                a / 10 > 1
+                  ? ["м", getRandomElement(["см", "мм"])]
+                  : ["см", "мм"]; // 2
+              toMeasures = prepareMeasures; // 2
+              break;
+            case "см":
+              prepareMeasures =
+                a / 100 > 1 ? ["м", "см"] : a / 10 > 1 ? ["дм", "см"] : ["мм"]; // 2 || 1
+              toMeasures = prepareMeasures; // 2
+              break;
+            case "мм":
+              toMeasures = [`мм`];
+              break;
+            default:
+              toMeasures = [`мм`];
+              break;
+          }
+        } else {
+          toMeasures = [fromMeasures[1]]; // 1
+        }
 
         fromMeasures.sort(
           (a: string, b: string) => sortOrder.indexOf(a) - sortOrder.indexOf(b)
@@ -167,10 +219,10 @@ export const getNewQuestion = (options: any) => {
         );
 
         // Формирование вопроса без оператора, рандомно левая и правая в зависимости от левой
-        questionText += `${fromMeasures.map((it: string, ind: number) => (ind ? `${b} ${it}` : `${a} ${it}`)).join(` `)} = ... ${toMeasures.map((it: string) => `... ${it}`).join(` `)}`;
+        questionText += `${fromMeasures.map((it: string, ind: number) => (ind ? `${b} ${it}` : `${a} ${it}`)).join(` `)} = ${toMeasures.map((it: string) => `... ${it}`).join(` `)}`;
       }
 
-      answer = convertMeasure([a, b], fromMeasures, toMeasures);
+      answer = convertMeasure([a, b], fromMeasures, toMeasures, operator);
 
       break;
     default:
@@ -195,7 +247,8 @@ export const getNewQuestion = (options: any) => {
             convertMeasure(
               [getRandNum(maxAnswer), getRandNum(maxAnswer)],
               fromMeasures,
-              toMeasures
+              toMeasures,
+              operator
             )
           )
         : prepareShuffle.add(getRandNum(maxAnswer));
