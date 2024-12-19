@@ -7,6 +7,7 @@ import AnswersResult from "../../../_components/AnswersResult/AnswersResult.vue"
 import MathTypeTabs from "../../../_components/MathTypeTabs/MathTypeTabs.vue";
 import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
 import { MathType } from "../../../../helpers/consts/consts.ts";
+import AppButton from "../../../_components/_ui-kit/AppButton/AppButton.vue";
 
 const mathType = ref(MathType.ADDITION);
 const selectedRange = ref<any>({stringRange: ``, operators: []});
@@ -14,6 +15,7 @@ const selectedRange = ref<any>({stringRange: ``, operators: []});
 const currentQuestion = ref({});
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
+const isAnswered = ref(false);
 
 const isStartQuiz = computed(() => {
   switch (mathType.value) {
@@ -41,9 +43,16 @@ const handleCheckAnswer = (isCorrect: boolean) => {
     inCorrectAnswersCount.value++;
   }
 
-  setTimeout(() => {
-    currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: selectedRange.value });
-  }, 500);
+  // показываем ответ
+  currentQuestion.value.questionText = currentQuestion.value.questionText
+      .replace(`?`, currentQuestion.value.answer)
+      .replace(/=.+/gi, `= ${currentQuestion.value.answer}`)
+      .replace(`...`, currentQuestion.value.answer);
+};
+
+const handleNextAnswer = () => {
+  currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: selectedRange.value });
+  isAnswered.value = false;
 };
 
 watchEffect(() => {
@@ -68,7 +77,12 @@ watchEffect(() => {
         :mathType="mathType"
         :handleCheckAnswer="handleCheckAnswer"
         :question="currentQuestion"
+        v-model:isAnswered="isAnswered"
       />
+
+      <AppButton isGlowOnHover :handleClick="handleNextAnswer" :disabled="!isAnswered"
+      >Следующи вопрос</AppButton
+      >
 
       <AnswersResult
         :correctAnswersCount="correctAnswersCount"

@@ -21,6 +21,7 @@ const fieldName = ref(`Катя`);
 const currentQuestion = ref({});
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
+const isAnswered = ref(false);
 
 
 // todo подумать может прокидывать рандом без computed а не кешированную функцию
@@ -68,6 +69,7 @@ const handleCheckAnswer = (isCorrect: boolean) => {
   }
 
   setTimeout(() => {
+    isAnswered.value = false;
     currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: getPrepareSelectedRange(mathType.value) });
   }, 500);
 };
@@ -151,6 +153,7 @@ watchEffect( () => {
           :mathType="mathType"
           :handleCheckAnswer="handleCheckAnswer"
           :question="currentQuestion"
+          v-model:isAnswered="isAnswered"
         />
       </div>
     </div>

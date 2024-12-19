@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {  ref, VueElement } from "vue";
+import {ref, VueElement, watch} from "vue";
 import {MathType} from "../../../helpers/consts/consts.ts";
 
 const props = defineProps<{
@@ -9,11 +9,21 @@ const props = defineProps<{
   maxShuffle?: number;
 }>();
 
+const isAnswered = defineModel<any>("isAnswered");
+
 const selectedAnswer = ref<VueElement | null>(null);
+
+const clearAnswerColor = () => {
+  selectedAnswer.value?.classList.remove(
+      "question__answers-item--correct",
+      "question__answers-item--incorrect"
+  );
+}
 
 const checkAnswer = (answer: any, element: any) => {
   selectedAnswer.value = element;
   const isCorrectAnswer = answer === props.question.answer;
+  isAnswered.value = true;
 
   if (isCorrectAnswer) {
     selectedAnswer.value?.classList.add("question__answers-item--correct");
@@ -22,14 +32,17 @@ const checkAnswer = (answer: any, element: any) => {
   }
 
   setTimeout(() => {
-    selectedAnswer.value?.classList.remove(
-      "question__answers-item--correct",
-      "question__answers-item--incorrect"
-    );
-
     props.handleCheckAnswer(isCorrectAnswer);
+    //clearAnswerColor();
   }, 500);
 };
+
+watch(isAnswered, () => {
+  if (!isAnswered.value) {
+    clearAnswerColor();
+  }
+})
+
 </script>
 
 <template>
@@ -39,14 +52,15 @@ const checkAnswer = (answer: any, element: any) => {
     </div>
 
     <div :class="{question__answers: true, measures: props.mathType === MathType.LENGTH_MEASURES}">
-      <div
+      <button
         class="question__answers-item"
         v-for="(answer, index) in question.shuffledAnswers"
         :key="index"
         @click="checkAnswer(answer, $event.target)"
+        :disabled="isAnswered"
       >
         {{ answer }}
-      </div>
+      </button>
     </div>
   </div>
 </template>
@@ -75,6 +89,7 @@ const checkAnswer = (answer: any, element: any) => {
 
     &-item {
       display: flex;
+      margin: 0;
       align-items: center;
       justify-content: center;
       border: 1px solid black;
