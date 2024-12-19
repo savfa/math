@@ -114,7 +114,7 @@ const handleClick = computed(() => (value: string, options: any) => {
   const rangeName =  (operators && `operators`) || ``;
 
   selectedRange.value[rangeName] = selectedRange.value[rangeName].includes(value)
-      ? selectedRange.value[rangeName].filter((it) => it !== value)
+      ? selectedRange.value[rangeName].filter((it: string) => it !== value)
       : [...selectedRange.value[rangeName], value];
 });
 </script>

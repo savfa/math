@@ -26,7 +26,7 @@ const isAnswered = ref(false);
 
 // todo подумать может прокидывать рандом без computed а не кешированную функцию
 const getPrepareSelectedRange = (mathType: string) => {
-  const selectedRange = { stringRange: `1-50`, operators: [] };
+  const selectedRange: any = { stringRange: `1-50`, operators: [] };
   switch (mathType) {
     case MathType.ADDITION:
       selectedRange.stringRange = `1-50`;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, reactive, ref, toRefs, watch, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import Page from "../../../_components/_ui-kit/Page/Page.vue";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
 import SelectedRange from "../../../training/components/trainingPage/SelectedRange/SelectedRange.vue";
@@ -12,7 +12,7 @@ import AppButton from "../../../_components/_ui-kit/AppButton/AppButton.vue";
 const mathType = ref(MathType.ADDITION);
 const selectedRange = ref<any>({stringRange: ``, operators: []});
 
-const currentQuestion = ref({});
+const currentQuestion = ref<any>({});
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
 const isAnswered = ref(false);
