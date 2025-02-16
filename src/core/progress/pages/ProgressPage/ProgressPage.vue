@@ -46,11 +46,12 @@ const hashLogs = computed(() =>
     return res;
   }, {})
 );
+
 </script>
 
 <template>
   <Page class="progress-page">
-    <div class="year" v-for="year in Object.keys(hashLogs)" :key="year">
+    <div class="year" v-for="year in Object.keys(hashLogs).sort((a, b) => b - a)" :key="year">
       <template v-if="+year < new Date().getFullYear()">
         <AppButton isButtonTag :style="{ margin: '1rem auto' }">
           {{ year }} год
@@ -96,13 +97,13 @@ const hashLogs = computed(() =>
           </table>
         </div>
       </div>
-
-      <PaginationNumeric
-          :links="progressLogs.links"
-          :handlePage="handleFilterLogs"
-          :perPage="LOGS_PER_PAGE"
-      />
     </div>
+
+    <PaginationNumeric
+        :links="progressLogs.links"
+        :handlePage="handleFilterLogs"
+        :perPage="LOGS_PER_PAGE"
+    />
   </Page>
 </template>
 

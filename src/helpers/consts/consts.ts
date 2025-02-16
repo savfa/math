@@ -3,6 +3,7 @@ export const MathType = {
   SUBTRACTION: `SUBTRACTION`,
   MULTIPLICATION: `MULTIPLICATION`,
   COMPARE: `COMPARE`,
+  LENGTH_MEASURES: `LENGTH_MEASURES`,
 };
 
 export const months: string[] = [

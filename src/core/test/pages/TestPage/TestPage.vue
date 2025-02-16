@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Page from "../../../_components/_ui-kit/Page/Page.vue";
-import {ref, watch, inject, computed} from "vue";
+import {ref, inject, watchEffect} from "vue";
 import AppButton from "../../../_components/_ui-kit/AppButton/AppButton.vue";
-import { getNewQuestion } from "../../../../helpers/utils/utils.ts";
+import {getNewQuestion, getRandomElement} from "../../../../helpers/utils/utils.ts";
 import QuestionAnswers from "../../../_components/QuestionAnswers/QuestionAnswers.vue";
 import AnswersResult from "../../../_components/AnswersResult/AnswersResult.vue";
 import MathTypeTabs from "../../../_components/MathTypeTabs/MathTypeTabs.vue";
@@ -18,25 +18,39 @@ const isStartTesting = ref(false);
 const isFinishedTesting = ref(false);
 const timeString = ref(``);
 const fieldName = ref(`Катя`);
-const currentQuestion = ref<{ num: number; a: number; b: number } | null>(null);
+const currentQuestion = ref({});
 const correctAnswersCount = ref(0);
 const inCorrectAnswersCount = ref(0);
+const isAnswered = ref(false);
 
-const prepareQuestionsTypeRange = computed(() => {
-  switch (mathType.value) {
+
+// todo подумать может прокидывать рандом без computed а не кешированную функцию
+const getPrepareSelectedRange = (mathType: string) => {
+  const selectedRange: any = { stringRange: `1-50`, operators: [] };
+  switch (mathType) {
     case MathType.ADDITION:
-      return `1-50`;
+      selectedRange.stringRange = `1-50`;
+      break;
     case MathType.SUBTRACTION:
-      return `1-100`;
+      selectedRange.stringRange = `1-100`;
+      break;
     case MathType.MULTIPLICATION:
-      return `1-10`;
+      selectedRange.stringRange = `1-10`;
+      break;
     case MathType.COMPARE:
-      return `1-50`;
-
+      selectedRange.stringRange = `1-50`;
+      selectedRange.operators = getRandomElement([``, `+`, `-`]) ? [`+`, `-`] : [];
+      break;
+    case MathType.LENGTH_MEASURES:
+      selectedRange.stringRange = `1-30`;
+      selectedRange.operators = getRandomElement([``, `+`, `-`]) ? [`+`, `-`] : [];
+      break;
     default:
-      return `1-10`;
+      break;
   }
-});
+
+  return selectedRange;
+};
 
 const handleStartTesting = () => {
   isStartTesting.value = true;
@@ -44,7 +58,7 @@ const handleStartTesting = () => {
   timeString.value = ``;
   correctAnswersCount.value = 0;
   inCorrectAnswersCount.value = 0;
-  currentQuestion.value = getNewQuestion(prepareQuestionsTypeRange.value);
+  currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: getPrepareSelectedRange(mathType.value) });
 };
 
 const handleCheckAnswer = (isCorrect: boolean) => {
@@ -55,17 +69,15 @@ const handleCheckAnswer = (isCorrect: boolean) => {
   }
 
   setTimeout(() => {
-    currentQuestion.value = getNewQuestion(
-        prepareQuestionsTypeRange.value,
-      (currentQuestion.value?.num || 1) + 1
-    );
+    isAnswered.value = false;
+    currentQuestion.value = getNewQuestion({ mathType: mathType.value, selectedRange: getPrepareSelectedRange(mathType.value) });
   }, 500);
 };
 
 const progressLogs = inject<any>("progressLogs");
 
-watch(currentQuestion, () => {
-  if (currentQuestion.value?.num === 16) {
+watchEffect( () => {
+  if ((correctAnswersCount.value + inCorrectAnswersCount.value) === 15) {
     isStartTesting.value = false;
     isFinishedTesting.value = true;
 
@@ -130,7 +142,7 @@ watch(currentQuestion, () => {
         v-if="isStartTesting && !isFinishedTesting"
       >
         <div class="test-page__progress-info">
-          <div>{{ currentQuestion?.num || 1 }} / 15</div>
+          <div>{{ (correctAnswersCount + inCorrectAnswersCount + 1)}} / 15</div>
           <TimerTime
             :isStartTimer="isStartTesting"
             v-model:timeString="timeString"
@@ -141,6 +153,7 @@ watch(currentQuestion, () => {
           :mathType="mathType"
           :handleCheckAnswer="handleCheckAnswer"
           :question="currentQuestion"
+          v-model:isAnswered="isAnswered"
         />
       </div>
     </div>
@@ -192,6 +205,8 @@ watch(currentQuestion, () => {
   }
 
   &__progress {
+    width: 100%;
+
     &-info {
       display: flex;
       gap: 1rem;

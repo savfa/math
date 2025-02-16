@@ -14,7 +14,10 @@ const getIsActive = computed(() => (tabType: string) => {
 const handleMathType = computed(() => (tabType: string) => {
   mathType.value = tabType;
   if (mathType.value !== tabType) {
-    selectedRange.value = ``;
+    selectedRange.value = {
+      stringRange: ``,
+      operators: []
+    };
   }
 });
 </script>
@@ -48,6 +51,13 @@ const handleMathType = computed(() => (tabType: string) => {
         :handleClick="() => handleMathType(MathType.COMPARE)"
     >
       {{ getMathTypeFormat(MathType.COMPARE) }}
+    </AppButton>
+    <AppButton
+        isButtonTab
+        :isActive="getIsActive(MathType.LENGTH_MEASURES)"
+        :handleClick="() => handleMathType(MathType.LENGTH_MEASURES)"
+    >
+      {{ getMathTypeFormat(MathType.LENGTH_MEASURES) }}
     </AppButton>
   </div>
 </template>
