@@ -51,7 +51,7 @@ const hashLogs = computed(() =>
 
 <template>
   <Page class="progress-page">
-    <div class="year" v-for="year in Object.keys(hashLogs).sort((a, b) => b - a)" :key="year">
+    <div class="year" v-for="year in Object.keys(hashLogs).sort((a: string, b: string) => +b - +a)" :key="year">
       <template v-if="+year < new Date().getFullYear()">
         <AppButton isButtonTag :style="{ margin: '1rem auto' }">
           {{ year }} год
